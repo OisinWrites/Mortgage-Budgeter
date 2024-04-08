@@ -26,7 +26,30 @@ const FinancialPlanner = () => {
   return (
     <div>
       <h2>Financial Planner</h2>
-      {/* Existing inputs for income, expenditure, and savings rate */}
+      <div>
+        <div>
+          <div>
+            <label>Monthly Income (€):</label>
+            <input type="number" value={monthlyIncome} onChange={(e) => setMonthlyIncome(Number(e.target.value))} />
+          </div>
+          <div>
+            <label>Monthly Expenditure (€):</label>
+            <input type="number" value={monthlyExpenditure} onChange={(e) => setMonthlyExpenditure(Number(e.target.value))} />
+          </div>
+          <div>
+            <label>Savings Rate (%):</label>
+            <input type="number" value={savingsRate} onChange={(e) => setSavingsRate(Number(e.target.value))} />
+          </div>
+          <div>
+            <label>Savings Goal (€):</label>
+            <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
+          </div>
+          <div>
+            <p>Months to Reach Goal: {monthsToGoal === Infinity ? "Goal not reachable with current savings rate." : monthsToGoal}</p>
+          </div>
+        </div>
+      </div>
+
       <div>
         <label>Savings Goal (€):</label>
         <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(e.target.value)} />
