@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
 const FinancialPlanner = () => {
-  const [monthlyIncome, setMonthlyIncome] = useState(0);
-  const [monthlyExpenditure, setMonthlyExpenditure] = useState(0);
-  const [savingsRate, setSavingsRate] = useState(0); // As a percentage
-  const [savingsGoal, setSavingsGoal] = useState(0);
+  const [monthlyIncome, setMonthlyIncome] = useState(null);
+  const [monthlyExpenditure, setMonthlyExpenditure] = useState(null);
+  const [savingsRate, setSavingsRate] = useState(20); // As a percentage
+  const [savingsGoal, setSavingsGoal] = useState(null);
 
   const surplus = monthlyIncome - monthlyExpenditure;
   const monthlySavings = (surplus * savingsRate) / 100;
@@ -13,6 +13,12 @@ const FinancialPlanner = () => {
     if (monthlySavings <= 0) return Infinity; // If monthly savings is 0 or negative, the goal is unattainable.
     const months = goalAmount / monthlySavings;
     return Math.ceil(months); // Round up to the nearest whole month
+  };
+
+  const handleSavingsRateChange = (event) => {
+    let value = Number(event.target.value);
+    value = Math.max(1, Math.min(100, value)); // Enforce the value to be between 1 and 100
+    setSavingsRate(value);
   };
   
   const monthsToGoal = calculateMonthsToReachGoal(monthlySavings, savingsGoal);
@@ -38,7 +44,14 @@ const FinancialPlanner = () => {
           </div>
           <div>
             <label>Savings Rate (%):</label>
-            <input type="number" value={savingsRate} onChange={(e) => setSavingsRate(Number(e.target.value))} />
+            <input
+              type="number"
+              value={savingsRate}
+              onChange={handleSavingsRateChange} // Use the new handler here
+              min="1"
+              max="100"
+              placeholder="Savings Rate (%)"
+            />
           </div>
           <div>
             <label>Savings Goal (€):</label>

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-const BorrowingCapacityCalculator = () => {
-  const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
+const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer }) => {
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [applicantIncomes, setApplicantIncomes] = useState([0, 0]);
+  const [applicantIncomes, setApplicantIncomes] = useState([null, null]);
 
   const handleIncomeChange = (index, value) => {
     const newIncomes = [...applicantIncomes];
@@ -43,6 +42,7 @@ const BorrowingCapacityCalculator = () => {
           <input
             type="number"
             value={applicantIncomes[index]}
+            placeholder="0"
             onChange={(e) => handleIncomeChange(index, e.target.value)}
           />
         </div>

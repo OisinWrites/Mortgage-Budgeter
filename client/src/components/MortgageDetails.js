@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
 
-const MortgageDetails = () => {
+const MortgageDetails = ({ isFirstTimeBuyer }) => {
   const [purchasePrice, setPurchasePrice] = useState('');
   const [mortgageAmount, setMortgageAmount] = useState('');
   const [loanTerm, setLoanTerm] = useState('');
   const [interestRate, setInterestRate] = useState('');
-  const [oldestApplicantAge, setOldestApplicantAge] = useState('');
-  const [monthlyPayment, setMonthlyPayment] = useState(0); // State to store the calculated monthly payment
-
-  // Determine the maximum loan term based on the age of the oldest applicant
-  const maxLoanTerm = 70 - oldestApplicantAge;
+  const [monthlyPayment, setMonthlyPayment] = useState(0);
 
   const calculateMonthlyMortgagePayment = (principal, annualInterestRate, loanTermYears) => {
-    if (annualInterestRate === 0 || loanTermYears === 0) return 0; // Avoid division by zero
-    const monthlyInterestRate = annualInterestRate / 12 / 100; // Convert to a decimal and monthly rate
+    if (annualInterestRate === 0 || loanTermYears === 0) return 0;
+    const monthlyInterestRate = annualInterestRate / 12 / 100;
     const loanTermMonths = loanTermYears * 12;
-    const monthlyPayment =
-      principal *
+    return principal *
       (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTermMonths)) /
       (Math.pow(1 + monthlyInterestRate, loanTermMonths) - 1);
-    return monthlyPayment;
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault();
+    const minPropertyValue = isFirstTimeBuyer
+      ? Number(mortgageAmount) * (10 / 9)
+      : Number(mortgageAmount) * (5 / 4);
+
+    if (Number(purchasePrice) < minPropertyValue) {
+      alert(`The purchase price must be at least €${minPropertyValue.toFixed(2)} for a ${isFirstTimeBuyer ? "first-time" : "second-time"} buyer.`);
+      return;
+    }
+
     const calculatedMonthlyPayment = calculateMonthlyMortgagePayment(
       Number(mortgageAmount),
       Number(interestRate),
@@ -53,20 +56,11 @@ const MortgageDetails = () => {
           />
         </div>
         <div>
-          <label>Oldest Applicant Age:</label>
-          <input
-            type="number"
-            value={oldestApplicantAge}
-            onChange={(e) => setOldestApplicantAge(e.target.value)}
-          />
-        </div>
-        <div>
           <label>Loan Term (Years):</label>
           <input
             type="number"
             value={loanTerm}
             onChange={(e) => setLoanTerm(e.target.value)}
-            max={maxLoanTerm}
           />
         </div>
         <div>

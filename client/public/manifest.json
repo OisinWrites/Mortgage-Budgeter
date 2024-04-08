@@ -1,6 +1,6 @@
 {
   "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "Mortgage Budgeteer",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "https://res.cloudinary.com/dwhennrjl/image/upload/v1712570224/static/css/Pngtree_house_home_puppy_hand_drawing_4088450_wphcay.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "https://res.cloudinary.com/dwhennrjl/image/upload/v1712570224/static/css/Pngtree_house_home_puppy_hand_drawing_4088450_wphcay.png",
       "type": "image/png",
       "sizes": "512x512"
     }

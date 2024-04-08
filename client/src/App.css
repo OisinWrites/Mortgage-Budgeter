@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+.mortgage-budgeteer label {
+  padding-right: 0.4rem;
+  padding-bottom: 0.4rem;
+}
