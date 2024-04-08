@@ -55,6 +55,15 @@ const MortgageDetails = ({ isFirstTimeBuyer, updateFirstTimeBuyer }) => {
         <label>Interest Rate (%):</label>
         <input type="number" step="0.01" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} />
       </div>
+      <div>
+        <form onSubmit={handleSubmit}>
+        <input type="number" value={principal} onChange={e => setPrincipal(e.target.value)} placeholder="Loan Amount" />
+        <input type="number" value={interestRate} onChange={e => setInterestRate(e.target.value)} placeholder="Annual Interest Rate" />
+        <input type="number" value={loanTerm} onChange={e => setLoanTerm(e.target.value)} placeholder="Loan Term (Years)" />
+        <button type="submit">Calculate</button>
+        <p>Monthly Payment: {monthlyPayment.toFixed(2)}</p>
+      </form>
+      </div>
     </div>
   );
 };

@@ -9,6 +9,12 @@ const FinancialPlanner = () => {
   const surplus = monthlyIncome - monthlyExpenditure;
   const monthlySavings = (surplus * savingsRate) / 100;
 
+  const calculateMonthsToReachGoal = (monthlySavings, goalAmount) => {
+    if (monthlySavings <= 0) return Infinity; // If monthly savings is 0 or negative, the goal is unattainable.
+    const months = goalAmount / monthlySavings;
+    return Math.ceil(months); // Round up to the nearest whole month
+  };
+  
   const monthsToGoal = calculateMonthsToReachGoal(monthlySavings, savingsGoal);
 
   const adjustSavingsRateForInsight = (adjustment) => {

@@ -1,8 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
-import BorrowingCapacityCalculator from './BorrowingCapacityCalculator';
-import MortgageDetails from './MortgageDetails';
-import FinancialPlanner from './FinancialPlanner';
+import BorrowingCapacityCalculator from './components/BorrowingCapacityCalculator';
+import MortgageDetails from './components/MortgageDetails';
+import FinancialPlanner from './components/FinancialPlanner';
 
 
 
