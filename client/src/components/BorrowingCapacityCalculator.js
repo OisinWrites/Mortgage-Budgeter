@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow }) => {
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [applicantIncomes, setApplicantIncomes] = useState([0, 0]); // Initialize with zeroes for simplification
+  const [applicantIncomes, setApplicantIncomes] = useState([null, null]); // Initialize with zeroes for simplification
 
   useEffect(() => {
     const totalIncome = applicantIncomes.reduce((acc, curr) => acc + (curr || 0), 0); // Sum, treating nulls as 0
