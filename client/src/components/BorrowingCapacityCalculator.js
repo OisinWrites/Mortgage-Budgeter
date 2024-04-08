@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer }) => {
+const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow }) => {
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [applicantIncomes, setApplicantIncomes] = useState([null, null]);
+  const [applicantIncomes, setApplicantIncomes] = useState([0, 0]); // Initialize with zeroes for simplification
 
+  useEffect(() => {
+    const totalIncome = applicantIncomes.reduce((acc, curr) => acc + (curr || 0), 0); // Sum, treating nulls as 0
+    const maxBorrow = totalIncome * 3.5; // Example calculation
+    setMaxBorrow(maxBorrow); // Update maxBorrow in App.js
+  }, [applicantIncomes, isFirstTimeBuyer, setMaxBorrow]);
   const handleIncomeChange = (index, value) => {
     const newIncomes = [...applicantIncomes];
     newIncomes[index] = Number(value);
