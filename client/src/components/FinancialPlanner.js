@@ -10,7 +10,7 @@ const FinancialPlanner = () => {
   const monthlySavings = (surplus * savingsRate) / 100;
 
   const calculateMonthsToReachGoal = (monthlySavings, goalAmount) => {
-    if (monthlySavings <= 0) return Infinity; // If monthly savings is 0 or negative, the goal is unattainable.
+    if (monthlySavings <= 0) return "-"; // If monthly savings is 0 or negative, the goal is unattainable.
     const months = goalAmount / monthlySavings;
     return Math.ceil(months); // Round up to the nearest whole month
   };
@@ -33,7 +33,7 @@ const FinancialPlanner = () => {
     <div>
       <h2>Financial Planner</h2>
       <div>
-        <div>
+        <div class="split-middle">
           <div>
             <label>Monthly Income (€):</label>
             <input type="number" value={monthlyIncome} onChange={(e) => setMonthlyIncome(Number(e.target.value))} />
@@ -57,22 +57,14 @@ const FinancialPlanner = () => {
             <label>Savings Goal (€):</label>
             <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
           </div>
-          <div>
-            <p>Months to Reach Goal: {monthsToGoal === Infinity ? "Goal not reachable with current savings rate." : monthsToGoal}</p>
-          </div>
         </div>
       </div>
 
-      <div>
-        <label>Savings Goal (€):</label>
-        <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(e.target.value)} />
-      </div>
-      <div>
-        <p>Months to Reach Goal: {monthsToGoal === Infinity ? "Goal not reachable with current savings rate." : monthsToGoal}</p>
-      </div>
-      <div>
+
+      <div class="p-3">
         <p>Increase savings rate by 5% to reach the goal in {adjustSavingsRateForInsight(5)} months.</p>
         <p>Increase savings rate by 10% to reach the goal in {adjustSavingsRateForInsight(10)} months.</p>
+        <h6 class="strong">Months to Reach Goal: {monthsToGoal === Infinity ? "" : monthsToGoal}</h6>
       </div>
     </div>
   );

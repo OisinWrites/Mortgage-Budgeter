@@ -8,9 +8,9 @@ import DepositSavingPeriod from './components/DepositSavingPeriod';
 
 
 function App() {
-  // State to track if the user is a first-time buyer
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
-  const [maxBorrow, setMaxBorrow] = useState(0); // Assume this is calculated somewhere in App
+  const [maxBorrow, setMaxBorrow] = useState(0);
+  const [numberOfApplicants, setNumberOfApplicants] = useState(1);
 
   return (
     <div className="App">
@@ -18,15 +18,31 @@ function App() {
         <h1>Mortgage and Savings Calculator</h1>
       </header>
       <main class="mortgage-budgeteer">
-        <BorrowingCapacityCalculator
-          setMaxBorrow={setMaxBorrow}
-          isFirstTimeBuyer={isFirstTimeBuyer}
-          setIsFirstTimeBuyer={setIsFirstTimeBuyer}
-        />
-        <DepositSavingPeriod maxBorrow={maxBorrow} isFirstTimeBuyer={isFirstTimeBuyer} />
-        <MortgageDetails isFirstTimeBuyer={isFirstTimeBuyer} />
-        <FinancialPlanner isFirstTimeBuyer={isFirstTimeBuyer} />
-
+        <div class="bcc">
+          <div class="section">
+            <BorrowingCapacityCalculator
+              setMaxBorrow={setMaxBorrow}
+              isFirstTimeBuyer={isFirstTimeBuyer}
+              setIsFirstTimeBuyer={setIsFirstTimeBuyer}
+              setNumberOfApplicants={setNumberOfApplicants}
+            />
+          </div>
+        </div>
+        <div class="dsp">
+          <div class="section">
+            <DepositSavingPeriod maxBorrow={maxBorrow} isFirstTimeBuyer={isFirstTimeBuyer} hasSecondApplicant={numberOfApplicants > 1}/>
+          </div>
+        </div>
+        <div class="mod">
+          <div class="section">
+          <MortgageDetails isFirstTimeBuyer={isFirstTimeBuyer} />
+          </div>
+        </div>
+        <div class="fp">
+          <div class="section">
+          <FinancialPlanner isFirstTimeBuyer={isFirstTimeBuyer} />
+          </div>
+        </div>
         <a class="pb-3" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>

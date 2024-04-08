@@ -39,42 +39,44 @@ const MortgageDetails = ({ isFirstTimeBuyer }) => {
     <div>
       <h2>Mortgage Details</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Estimated Purchase Price of the Property:</label>
-          <input
-            type="number"
-            value={purchasePrice}
-            onChange={(e) => setPurchasePrice(e.target.value)}
-          />
+        <div class="split-middle">
+          <div>
+            <label>Estimated Value of Property:</label>
+            <input
+              type="number"
+              value={purchasePrice}
+              onChange={(e) => setPurchasePrice(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Mortgage Amount:</label>
+            <input
+              type="number"
+              value={mortgageAmount}
+              onChange={(e) => setMortgageAmount(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Loan Term (Years):</label>
+            <input
+              type="number"
+              value={loanTerm}
+              onChange={(e) => setLoanTerm(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Interest Rate (%):</label>
+            <input
+              type="number"
+              step="0.01"
+              value={interestRate}
+              onChange={(e) => setInterestRate(e.target.value)}
+            />
+          </div>
         </div>
-        <div>
-          <label>Mortgage Amount:</label>
-          <input
-            type="number"
-            value={mortgageAmount}
-            onChange={(e) => setMortgageAmount(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Loan Term (Years):</label>
-          <input
-            type="number"
-            value={loanTerm}
-            onChange={(e) => setLoanTerm(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Interest Rate (%):</label>
-          <input
-            type="number"
-            step="0.01"
-            value={interestRate}
-            onChange={(e) => setInterestRate(e.target.value)}
-          />
-        </div>
-        <button type="submit">Calculate</button>
+        <button class="m-2" type="submit">Calculate</button>
       </form>
-      <p>Monthly Payment: €{monthlyPayment.toFixed(2)}</p>
+      <h6 class="p-3">Monthly Payment: €{monthlyPayment.toFixed(2)}</h6>
     </div>
   );
 };

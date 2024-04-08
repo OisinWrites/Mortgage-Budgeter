@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 // Corrected the component definition with proper function syntax
-const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow }) => {
-  const [numberOfApplicants, setNumberOfApplicants] = useState(1);
+const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow, setNumberOfApplicants }) => {
+  const [numberOfApplicants, setInternalNumberOfApplicants] = useState(1);
   const [applicantIncomes, setApplicantIncomes] = useState(Array(numberOfApplicants).fill(null));
   const [multiplier, setMultiplier] = useState(3.5);
   const [manualMaxBorrow, setManualMaxBorrow] = useState('');
@@ -28,6 +28,11 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
 
   }, [applicantIncomes, multiplier, manualMaxBorrow, isFirstTimeBuyer, setMaxBorrow]);
 
+  useEffect(() => {
+    // Update the array size when number of applicants changes
+    setApplicantIncomes(Array(numberOfApplicants).fill(null));
+  }, [numberOfApplicants]);
+
   const handleIncomeChange = (index, value) => {
     const newIncomes = [...applicantIncomes];
     newIncomes[index] = Number(value) || null; // Corrected to handle empty string and convert to null
@@ -36,6 +41,12 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
 
   const toggleExemption = () => {
     setMultiplier(multiplier === 3.5 ? 4.5 : 3.5);
+  };
+
+  const handleNumberOfApplicantsChange = (e) => {
+    const newCount = Number(e.target.value);
+    setInternalNumberOfApplicants(newCount);
+    setNumberOfApplicants(newCount); // Update state in App.js via prop
   };
 
   const handleManualMaxBorrowChange = (e) => {
@@ -47,50 +58,62 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
   return (
     <div>
       <h2>Borrowing Capacity Calculator</h2>
-      <div>
-        <label>First-time buyer?</label>
-        <select onChange={(e) => setIsFirstTimeBuyer(e.target.value === 'yes')}>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div>
-        <label>Number of Applicants:</label>
-        <select onChange={(e) => setNumberOfApplicants(Number(e.target.value))}>
-          <option value={1}>1</option>
-          <option value={2}>2</option>
-        </select>
+      <div class="split-middle">
+        <div>
+          <label>First-time buyer?</label>
+          <select class="split limit-width" onChange={(e) => setIsFirstTimeBuyer(e.target.value === 'yes')}>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div>
+          <label>Number of Applicants:</label>
+          <select class="split limit-width" value={numberOfApplicants} onChange={handleNumberOfApplicantsChange}>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+          </select>
+        </div>
       </div>
       {useManualInput ? (
         <div>
-          <button onClick={() => {
+          <div class="split-middle">
+            <div>
+              <label>Mortgage Quote: </label>
+              <input
+                class="split"
+                type="number"
+                placeholder="Mortgage Quote"
+                value={manualMaxBorrow}
+                onChange={handleManualMaxBorrowChange}
+              />
+            </div>
+          </div>
+
+          <button class="m-2" onClick={() => {
             setManualMaxBorrow('');
             setUseManualInput(false);
           }}>Use Simple Mortgage Calculator</button>
-          <br></br>
-          <label>Manual input for borrowing capacity:</label>
-          <input
-            type="number"
-            placeholder="Mortgage Quote"
-            value={manualMaxBorrow}
-            onChange={handleManualMaxBorrowChange}
-          />
         </div>
       ) : (
         <div>
           {[...Array(numberOfApplicants)].map((_, index) => (
-            <div key={index}>
-              <label>Applicant {index + 1} Annual Gross Income:</label>
-              <input
-                type="number"
-                value={applicantIncomes[index] || ''}
-                placeholder="0"
-                onChange={(e) => handleIncomeChange(index, e.target.value)}
-              />
+            <div class="split-middle">
+              <div>
+                <div key={index}>
+                  <label>Annual Gross Income #{index + 1}:</label>
+                  <input
+                    type="number"
+                    value={applicantIncomes[index] || ''}
+                    placeholder="0"
+                    onChange={(e) => handleIncomeChange(index, e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           ))}
-          <label className="pr-1">Toggle Exemption: 
-            <button onClick={toggleExemption}>{multiplier === 3.5 ? "3.5x" : "4.5x"}</button>
+          <label class="mt-1"> 
+            <button class="m-1" onClick={toggleExemption}>{multiplier === 3.5 ? "3.5x" : "4.5x"}</button><br></br>
+            toggle for exemption rate
           </label>
           <div>
             <p>All banks have their own policies based on an applicant's unique position.<br></br>
@@ -99,9 +122,9 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
           </div>
         </div>
       )}
-      <div>
-        <p>Maximum Borrowable Amount: €{effectiveMaxBorrow}</p>
-        <p><strong>Estimated Property Value: €{propertyValue}</strong></p>
+      <div class="mt-2 p-3">
+        <h6><strong>Maximum Borrowable Amount: €{effectiveMaxBorrow.toFixed(2)}</strong></h6>
+        <h6><strong>Estimated Property Value: €{propertyValue.toFixed(2)}</strong></h6>
       </div>
     </div>
   );

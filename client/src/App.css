@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  position: relative;
+  background-color: #eff1f3;
 }
 
 .App-logo {
@@ -37,8 +39,70 @@
   }
 }
 
+.mortgage-budgeteer div {
+  position: relative;
+  width: 100%;
+}
+
+.section {
+  padding-top: 1rem;
+  max-width: 30rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bcc, .mod {
+  background-color: #eff1f3;
+  color: #282c34;
+}
+
+.dsp {
+  background-color: #3581b8;
+  color: #eff1f3;
+}
+
+.dsp h5 {
+  padding-top: .8rem;
+}
+
+.fp {
+  background-color: #9ac171;
+}
+
+.split-middle div {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.split-middle div label {
+  flex: 0 0 auto;
+  text-align: right;
+  margin-right: auto;
+  min-width: 50%;
+}
+
+.split-middle div input {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.split {
+  flex-grow: 1;
+  text-align: left;
+}
 
 .mortgage-budgeteer label {
   padding-right: 0.4rem;
   padding-bottom: 0.4rem;
+}
+
+.additional-fees {
+  text-align: right;
+  padding-right: 4rem;
+}
+
+.additional-fees label, p {
+  font-size: 80%;
+  margin-bottom: 0.2rem !important;
 }
