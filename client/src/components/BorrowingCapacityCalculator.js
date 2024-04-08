@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from 'react';
 
+// Corrected the component definition with proper function syntax
 const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow }) => {
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [applicantIncomes, setApplicantIncomes] = useState([null, null]);
+  const [applicantIncomes, setApplicantIncomes] = useState(Array(numberOfApplicants).fill(null));
   const [multiplier, setMultiplier] = useState(3.5);
   const [manualMaxBorrow, setManualMaxBorrow] = useState('');
+  const [propertyValue, setPropertyValue] = useState(0);
+  const [effectiveMaxBorrow, setEffectiveMaxBorrow] = useState(0);
+  const [useManualInput, setUseManualInput] = useState(false);
 
   useEffect(() => {
-    if (!manualMaxBorrow) { 
+    let calculatedEffectiveMaxBorrow = 0;
+
+    if (manualMaxBorrow) {
+      calculatedEffectiveMaxBorrow = Number(manualMaxBorrow);
+    } else {
       const totalIncome = applicantIncomes.reduce((acc, curr) => acc + (curr || 0), 0);
-      const maxBorrow = totalIncome * multiplier;
-      setMaxBorrow(maxBorrow);
+      calculatedEffectiveMaxBorrow = totalIncome * multiplier;
     }
-  }, [applicantIncomes, multiplier, manualMaxBorrow, setMaxBorrow]);
+
+    setEffectiveMaxBorrow(calculatedEffectiveMaxBorrow);
+
+    const loanToValueRatio = isFirstTimeBuyer ? 0.9 : 0.8;
+    setPropertyValue(calculatedEffectiveMaxBorrow / loanToValueRatio);
+    setMaxBorrow(calculatedEffectiveMaxBorrow);
+
+  }, [applicantIncomes, multiplier, manualMaxBorrow, isFirstTimeBuyer, setMaxBorrow]);
 
   const handleIncomeChange = (index, value) => {
     const newIncomes = [...applicantIncomes];
-    newIncomes[index] = Number(value);
+    newIncomes[index] = Number(value) || null; // Corrected to handle empty string and convert to null
     setApplicantIncomes(newIncomes);
   };
 
@@ -29,15 +43,6 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
     setManualMaxBorrow(value);
     setMaxBorrow(value ? Number(value) : 0);
   };
-
-  const calculateBorrowingCapacity = () => {
-    const totalIncome = applicantIncomes.reduce((acc, curr) => acc + curr, 0);
-    const maxBorrow = totalIncome * multiplier;
-    const propertyValue = isFirstTimeBuyer ? (maxBorrow / 0.9) : (maxBorrow / 0.8);
-    return { maxBorrow, propertyValue };
-  };
-
-  const { maxBorrow, propertyValue } = calculateBorrowingCapacity();
 
   return (
     <div>
@@ -56,37 +61,47 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
           <option value={2}>2</option>
         </select>
       </div>
-      {[...Array(numberOfApplicants)].map((_, index) => (
-        <div key={index}>
-          <label>Applicant {index + 1} Annual Gross Income:</label>
-          <input
-            type="number"
-            value={applicantIncomes[index] || ''}
-            placeholder="0"
-            onChange={(e) => handleIncomeChange(index, e.target.value)}
-          />
-        </div>
-      ))}
-      <label class="pr-1">Toggle Exemption: 
-        <button onClick={toggleExemption}>{multiplier === 3.5 ? "3.5x" : "4.5x"}</button>
-      </label>
-      <div>
-        <p>Maximum Borrowable Amount: €{maxBorrow.toFixed(2)}</p>
-        <p>All banks have their own policies based on an applicant's unique position.<br></br>
-        For a more accurate calculation of your borrowing ability,<br></br> please refer to your preferred lender.</p>
-
+      {useManualInput ? (
         <div>
-          <label>You can manually input your borrowing capacity figure here:</label>
+          <button onClick={() => {
+            setManualMaxBorrow('');
+            setUseManualInput(false);
+          }}>Use Simple Mortgage Calculator</button>
+          <br></br>
+          <label>Manual input for borrowing capacity:</label>
           <input
             type="number"
-            placeholder="Borrowable Amount"
+            placeholder="Mortgage Quote"
             value={manualMaxBorrow}
             onChange={handleManualMaxBorrowChange}
           />
         </div>
-
-
-        <p><strong>Estimated Property Value: €{propertyValue.toFixed(2)}</strong></p>
+      ) : (
+        <div>
+          {[...Array(numberOfApplicants)].map((_, index) => (
+            <div key={index}>
+              <label>Applicant {index + 1} Annual Gross Income:</label>
+              <input
+                type="number"
+                value={applicantIncomes[index] || ''}
+                placeholder="0"
+                onChange={(e) => handleIncomeChange(index, e.target.value)}
+              />
+            </div>
+          ))}
+          <label className="pr-1">Toggle Exemption: 
+            <button onClick={toggleExemption}>{multiplier === 3.5 ? "3.5x" : "4.5x"}</button>
+          </label>
+          <div>
+            <p>All banks have their own policies based on an applicant's unique position.<br></br>
+              For a more accurate calculation of your borrowing ability,<br></br> please refer to your preferred lender.</p>
+            <button onClick={() => setUseManualInput(true)}>Use a Mortgage Quote</button>
+          </div>
+        </div>
+      )}
+      <div>
+        <p>Maximum Borrowable Amount: €{effectiveMaxBorrow}</p>
+        <p><strong>Estimated Property Value: €{propertyValue}</strong></p>
       </div>
     </div>
   );
