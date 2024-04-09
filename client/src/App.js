@@ -11,6 +11,8 @@ function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
   const [maxBorrow, setMaxBorrow] = useState(0);
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
+  const [housePrice, setHousePrice] = useState('');
+  const [mortgageAmount, setMortgageAmount] = useState('');
 
   return (
     <div className="App">
@@ -30,12 +32,23 @@ function App() {
         </div>
         <div class="dsp">
           <div class="section">
-            <DepositSavingPeriod maxBorrow={maxBorrow} isFirstTimeBuyer={isFirstTimeBuyer} hasSecondApplicant={numberOfApplicants > 1}/>
+            <DepositSavingPeriod 
+            maxBorrow={maxBorrow} 
+            isFirstTimeBuyer={isFirstTimeBuyer} 
+            hasSecondApplicant={numberOfApplicants > 1}
+            housePrice={housePrice}
+            sethousePrice={sethousePrice}
+            setMortgageAmount={setMortgageAmount}
+            />
           </div>
         </div>
         <div class="mod">
           <div class="section">
-          <MortgageDetails isFirstTimeBuyer={isFirstTimeBuyer} />
+          <MortgageDetails 
+          isFirstTimeBuyer={isFirstTimeBuyer} 
+          housePrice={housePrice}
+          mortgageAmount={mortgageAmount}
+          />
           </div>
         </div>
         <div class="fp">
@@ -43,6 +56,7 @@ function App() {
           <FinancialPlanner isFirstTimeBuyer={isFirstTimeBuyer} />
           </div>
         </div>
+        <p>House Price: {housePrice}</p>
         <a class="p-3 image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>

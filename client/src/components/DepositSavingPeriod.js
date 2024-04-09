@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 
-const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant}) => {
+const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant, setMortgageAmount}) => {
     const [mortgageDesired, setMortgageDesired] = useState('');
 
     const [netIncome, setNetIncome] = useState('');
@@ -178,9 +178,12 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
                         <input
                             type="number"
                             value={mortgageDesired}
-                            onChange={handleMortgageChange}
                             onBlur={() => setMortgageDesired(mortgageDesired > maxBorrow ? maxBorrow : mortgageDesired)}
                             placeholder="Mortgage Amount"
+                            onChange={(e) => {
+                                setMortgageAmount(e.target.value);
+                                handleMortgageChange(e);
+                            }}
                         />
                     </div>
                     <div>
@@ -189,8 +192,13 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
                         </label>
                     </div>
                     <div>
-                        <label>Estimated House Price: </label>
-                        <input type="number" value={housePrice} onChange={(e) => setHousePrice(e.target.value)} placeholder="House Price"/>
+                        <label>Estimated Property Value: </label>
+                        <input 
+                            type="number" 
+                            value={housePrice} 
+                            onChange={(e) => setHousePrice(e.target.value)}
+                            placeholder="House Price"
+                            />
                     </div>
                 </div>
 
@@ -234,6 +242,7 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
                     <h6 class="font-weight-bold">Total Savings Needed: €{isNaN(totalSavingsNeeded) ? 0 : totalSavingsNeeded.toFixed(2)}</h6>
                     <h6><strong>Months to Reach Goal: {monthsToSave <= 0 ? "Goal not achievable with current setup" : monthsToSave || "-"}</strong></h6>
                 </div>
+                <p>{housePrice}</p>
             </form>
         </div>
     );

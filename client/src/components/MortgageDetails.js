@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const MortgageDetails = ({ isFirstTimeBuyer }) => {
+const MortgageDetails = ({isFirstTimeBuyer, housePrice, mortgageAmount}) => {
   const [purchasePrice, setPurchasePrice] = useState('');
-  const [mortgageAmount, setMortgageAmount] = useState('');
+  const [mortgageAmountState, setMortgageAmountState] = useState('');
   const [loanTerm, setLoanTerm] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
+
+  useEffect(() => {
+    setPurchasePrice(housePrice);
+  }, [housePrice]);
+
+  useEffect(() => {
+    setMortgageAmountState(mortgageAmount);
+  }, [mortgageAmount]);
 
   const calculateMonthlyMortgagePayment = (principal, annualInterestRate, loanTermYears) => {
     if (annualInterestRate === 0 || loanTermYears === 0) return 0;
@@ -37,6 +45,7 @@ const MortgageDetails = ({ isFirstTimeBuyer }) => {
 
   return (
     <div>
+      <p>{housePrice}</p>
       <h2>Mortgage Details</h2>
       <form onSubmit={handleSubmit}>
         <div class="split-middle">
@@ -53,7 +62,7 @@ const MortgageDetails = ({ isFirstTimeBuyer }) => {
             <input
               type="number"
               value={mortgageAmount}
-              onChange={(e) => setMortgageAmount(e.target.value)}
+              onChange={(e) => setMortgageAmountState(e.target.value)}
             />
           </div>
           <div>
