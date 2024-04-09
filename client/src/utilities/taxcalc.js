@@ -45,7 +45,7 @@ const calculateUSC = (grossIncome) => {
         netIncome,
         netMonthlyIncome,
         netWeeklyIncome,
-        taxCredits: 3750 // Moved taxCredits here for clarity and direct access
+        taxCredits: 3750
     };
   };
   

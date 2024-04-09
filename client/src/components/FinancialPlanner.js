@@ -61,7 +61,6 @@ const FinancialPlanner = ({
     <div>
       <h2>Financial Planner</h2>
       <div class="">
-        <p>{loanTerm}</p>
         <div>
           <p>Gross Income: €{grossIncome1.toFixed(2)}</p>
           <p>PAYE: €{taxDetails1.paye.toFixed(2)}</p>
