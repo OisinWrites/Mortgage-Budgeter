@@ -1,9 +1,20 @@
 import React, { useState, useEffect} from 'react';
 
-const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant}) => {
-    const [mortgageDesired, setMortgageDesired] = useState('');
+const DepositSavingPeriod = ({ 
+    maxBorrow, 
+    isFirstTimeBuyer, 
+    hasSecondApplicant, 
+    housePrice,
+    setHousePrice,
+    mortgageDesired,
+    setMortgageDesired,
+    netIncome, 
+    setNetIncome, 
+    netIncome2, 
+    setNetIncome2,
+    updateTotalAnnualFees
+    }) => {
 
-    const [netIncome, setNetIncome] = useState('');
     const [monthlyExpenses, setMonthlyExpenses] = useState('');
     const [rent, setRent] = useState('');
     const [bills, setBills] = useState('');
@@ -11,7 +22,6 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
     const [savingsGoal, setSavingsGoal] = useState('');
     const [currentSavings, setCurrentSavings] = useState('');
 
-    const [netIncome2, setNetIncome2] = useState('');
     const [monthlyExpenses2, setMonthlyExpenses2] = useState('');
     const [rent2, setRent2] = useState('');
     const [bills2, setBills2] = useState('');
@@ -19,9 +29,20 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
     const [savingsGoal2, setSavingsGoal2] = useState('');
     const [currentSavings2, setCurrentSavings2] = useState('');
 
-    const [housePrice, setHousePrice] = useState('');
     const [solicitorFeeType, setSolicitorFeeType] = useState('1%');
     const [solicitorFlatFee, setSolicitorFlatFee] = useState('');
+
+    const handleHousePriceChange = (e) => {
+        const newHousePrice = e.target.value;
+        setHousePrice(newHousePrice); // Update state in App.js
+        // Additional logic if needed...
+    };
+
+    const handleMortgageChange = (e) => {
+        const value = Number(e.target.value);
+        const newMortgageDesired = value > maxBorrow ? maxBorrow : value;
+        setMortgageDesired(newMortgageDesired); // This updates the state in App.js directly
+    };
 
     useEffect(() => {
         if (!hasSecondApplicant) {
@@ -47,12 +68,6 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
 
     // Calculate the minimum deposit required
     const minimumDeposit = isFirstTimeBuyer ? mortgageDesired * 0.1 : mortgageDesired * 0.2;
-
-    // Handler to cap the mortgage desired based on max borrow capacity
-    const handleMortgageChange = (e) => {
-        const value = Number(e.target.value);
-        setMortgageDesired(value > maxBorrow ? maxBorrow : value);
-    };
 
     function calculateRegistryFee(housePrice) {
         if (housePrice <= 50000) return 400;
@@ -96,7 +111,10 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
     const propertyTax = calculatePropertyTax(housePrice);
     const totalAdditionalCosts = stampDuty + solicitorFees + valuerReport + surveyorReport + insuranceCosts + registryFee + propertyTax;
 
-    // Assuming functions calculateRegistryFee and calculatePropertyTax are implemented to determine the fees based on the given scales
+    useEffect(() => {
+        const newTotalAnnualFees = insuranceCosts + propertyTax;
+        updateTotalAnnualFees(newTotalAnnualFees);
+    }, [insuranceCosts, propertyTax, updateTotalAnnualFees]);
 
     // Total savings needed
     const totalSavingsNeeded = minimumDeposit + totalAdditionalCosts + Number(combinedSavingsGoal);
@@ -190,7 +208,11 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
                     </div>
                     <div>
                         <label>Estimated House Price: </label>
-                        <input type="number" value={housePrice} onChange={(e) => setHousePrice(e.target.value)} placeholder="House Price"/>
+                        <input 
+                        type="number" 
+                        value={housePrice} 
+                        onChange={handleHousePriceChange}
+                        placeholder="House Price"/>
                     </div>
                 </div>
 
@@ -217,11 +239,11 @@ const DepositSavingPeriod = ({ maxBorrow, isFirstTimeBuyer, hasSecondApplicant})
                     </p>
                     <p>Valuer's Report Fee: €{valuerReport.toFixed(2)}</p>
                     <p>Surveyor's Report Fee (plus 23% VAT): €{surveyorReport.toFixed(2)}</p>
+                    <p>Registry Fee: €{registryFee.toFixed(2)}</p>
                     <p>Homeowner's Insurance (annual): €{(300).toFixed(2)}</p>
                     <p>Mortgage Insurance (annual): €{(360).toFixed(2)}</p>
-                    <p>Registry Fee: €{registryFee.toFixed(2)}</p>
                     <p>
-                        Local Property Tax: €{propertyTax.toFixed(2)}
+                        Local Property Tax (Annual): €{propertyTax.toFixed(2)}
                         <br></br>
                         <a class="bcc m-0 pb-1" href="https://www.revenue.ie/en/search.aspx?q=lpt%20calculator" target="_blank" rel="noopener noreferrer">
                             (LPT is affected by the local authority rate.<br></br>

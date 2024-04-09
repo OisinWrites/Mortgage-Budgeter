@@ -2,7 +2,7 @@
   "name": "your-app-name",
   "version": "1.0.0",
   "description": "Your app description",
-  "main": "server/index.js", 
+  "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,6 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "chart.js": "^4.4.2",
+    "express": "^4.19.2",
+    "react-chartjs-2": "^5.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

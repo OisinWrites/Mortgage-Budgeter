@@ -1,82 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const MortgageDetails = ({ isFirstTimeBuyer }) => {
-  const [purchasePrice, setPurchasePrice] = useState('');
-  const [mortgageAmount, setMortgageAmount] = useState('');
+const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired }) => {
   const [loanTerm, setLoanTerm] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
+  const [repaymentSchedule, setRepaymentSchedule] = useState([]);
 
-  const calculateMonthlyMortgagePayment = (principal, annualInterestRate, loanTermYears) => {
-    if (annualInterestRate === 0 || loanTermYears === 0) return 0;
-    const monthlyInterestRate = annualInterestRate / 12 / 100;
-    const loanTermMonths = loanTermYears * 12;
-    return principal *
-      (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTermMonths)) /
-      (Math.pow(1 + monthlyInterestRate, loanTermMonths) - 1);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const minPropertyValue = isFirstTimeBuyer
-      ? Number(mortgageAmount) * (10 / 9)
-      : Number(mortgageAmount) * (5 / 4);
-
-    if (Number(purchasePrice) < minPropertyValue) {
-      alert(`The purchase price must be at least €${minPropertyValue.toFixed(2)} for a ${isFirstTimeBuyer ? "first-time" : "second-time"} buyer.`);
-      return;
+  useEffect(() => {
+    const monthlyInterestRate = interestRate / 12 / 100;
+    const loanTermMonths = loanTerm * 12;
+    const monthlyPayment = mortgageDesired * 
+      (monthlyInterestRate / (1 - Math.pow(1 + monthlyInterestRate, -loanTermMonths)));
+  
+    let schedule = [];
+    let remainingBalance = mortgageDesired;
+  
+    for (let year = 1; year <= loanTerm; year++) {
+      let annualInterestCharged = 0;
+      let capitalRepayment = 0;
+  
+      for (let month = 1; month <= 12; month++) {
+        let interestForMonth = remainingBalance * monthlyInterestRate;
+        let principalRepaymentForMonth = monthlyPayment - interestForMonth;
+        remainingBalance -= principalRepaymentForMonth;
+  
+        // Accumulate totals for the year
+        annualInterestCharged += interestForMonth;
+        capitalRepayment += principalRepaymentForMonth;
+      }
+  
+      // Correct for potential negative remaining balance in the last year
+      if (remainingBalance < 0) {
+        capitalRepayment += remainingBalance; // Subtract since remainingBalance is negative
+        remainingBalance = 0;
+      }
+  
+      schedule.push({
+        year,
+        openingBalance: remainingBalance + capitalRepayment, // Adjusted for the loop's decrement
+        annualInterestCharged,
+        capitalRepayment,
+      });
     }
-
-    const calculatedMonthlyPayment = calculateMonthlyMortgagePayment(
-      Number(mortgageAmount),
-      Number(interestRate),
-      Number(loanTerm)
-    );
-    setMonthlyPayment(calculatedMonthlyPayment);
-  };
+  
+    setMonthlyPayment(monthlyPayment);
+    setRepaymentSchedule(schedule);
+  }, [mortgageDesired, loanTerm, interestRate]);
 
   return (
     <div>
       <h2>Mortgage Details</h2>
-      <form onSubmit={handleSubmit}>
-        <div class="split-middle">
-          <div>
-            <label>Value of Property:</label>
-            <input
-              type="number"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Mortgage Amount:</label>
-            <input
-              type="number"
-              value={mortgageAmount}
-              onChange={(e) => setMortgageAmount(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Loan Term (Years):</label>
-            <input
-              type="number"
-              value={loanTerm}
-              onChange={(e) => setLoanTerm(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Interest Rate (%):</label>
-            <input
-              type="number"
-              step="0.01"
-              value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
-            />
-          </div>
+      <div class="split-middle">
+        <div>
+          <p>Value of Property: {housePrice}</p>
         </div>
-        <button class="m-2" type="submit">Calculate</button>
-      </form>
+        <div>
+          <p>Mortgage Amount: {mortgageDesired}</p>
+        </div>
+        <div>
+          <label>Loan Term (Years):</label>
+          <input
+            type="number"
+            value={loanTerm}
+            onChange={(e) => setLoanTerm(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Interest Rate (%):</label>
+          <input
+            type="number"
+            step="0.01"
+            value={interestRate}
+            onChange={(e) => setInterestRate(e.target.value)}
+          />
+        </div>
+      </div>
       <h6 class="p-3">Monthly Payment: €{monthlyPayment.toFixed(2)}</h6>
+      <h3>Repayment Schedule</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Year       #</th>
+            <th>Opening Balance (€)</th>
+            <th>Annual Interest Charged (€)</th>
+            <th>Capital Repayment (€)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {repaymentSchedule.map(({ year, openingBalance, annualInterestCharged, capitalRepayment }) => (
+            <tr key={year}>
+              <td>{year}</td>
+              <td>{openingBalance.toFixed(2)}</td>
+              <td>{annualInterestCharged.toFixed(2)}</td>
+              <td>{capitalRepayment.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

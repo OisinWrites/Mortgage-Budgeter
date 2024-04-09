@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const FinancialPlanner = () => {
+const FinancialPlanner = ({ netIncome, netIncome2, totalAnnualFees }) => {
   const [monthlyIncome, setMonthlyIncome] = useState(null);
+  const [monthlyIncome2, setMonthlyIncome2] = useState(null);
   const [monthlyExpenditure, setMonthlyExpenditure] = useState(null);
-  const [savingsRate, setSavingsRate] = useState(20); // As a percentage
+  const [savingsRate, setSavingsRate] = useState(100); // As a percentage
   const [savingsGoal, setSavingsGoal] = useState(null);
 
   const surplus = monthlyIncome - monthlyExpenditure;
@@ -17,7 +18,7 @@ const FinancialPlanner = () => {
 
   const handleSavingsRateChange = (event) => {
     let value = Number(event.target.value);
-    value = Math.max(1, Math.min(100, value)); // Enforce the value to be between 1 and 100
+    value = Math.max(1, Math.min(100, value));
     setSavingsRate(value);
   };
   
@@ -29,9 +30,18 @@ const FinancialPlanner = () => {
     return calculateMonthsToReachGoal(newMonthlySavings, savingsGoal);
   };
 
+  useEffect(() => {
+    setMonthlyIncome(netIncome);
+    if (netIncome2 !== '0') {
+      setMonthlyIncome2(netIncome2);
+    }
+  }, [netIncome, netIncome2]);
+
   return (
     <div>
+
       <h2>Financial Planner</h2>
+
       <div>
         <div class="split-middle">
           <div>
@@ -60,11 +70,27 @@ const FinancialPlanner = () => {
         </div>
       </div>
 
+      {netIncome2 !== '0' && (
+        <div>
+          <h3>Second Applicant</h3>
+          <div className="split-middle">
+            {/* Duplicate the questionnaire for the second applicant */}
+            <div>
+              <label>Monthly Income (€):</label>
+              <input type="number" value={monthlyIncome2} onChange={(e) => setMonthlyIncome2(Number(e.target.value))} />
+            </div>
+            {/* Add other inputs as needed */}
+          </div>
+        </div>
+      )}
+
 
       <div class="p-3">
         <p>Increase savings rate by 5% to reach the goal in {adjustSavingsRateForInsight(5)} months.</p>
         <p>Increase savings rate by 10% to reach the goal in {adjustSavingsRateForInsight(10)} months.</p>
         <h6 class="strong">Months to Reach Goal: {monthsToGoal === Infinity ? "" : monthsToGoal}</h6>
+        <div>
+      </div>
       </div>
     </div>
   );
