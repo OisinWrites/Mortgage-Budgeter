@@ -11,15 +11,13 @@ function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
   const [maxBorrow, setMaxBorrow] = useState(0);
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [housePrice, setHousePrice] = useState('');
-  const [mortgageAmount, setMortgageAmount] = useState('');
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Mortgage and Savings Calculator</h1>
       </header>
-      <main class="mortgage-budgeteer">
+      <main class="mortgage-budgeteer pb-3">
         <div class="bcc">
           <div class="section">
             <BorrowingCapacityCalculator
@@ -32,23 +30,12 @@ function App() {
         </div>
         <div class="dsp">
           <div class="section">
-            <DepositSavingPeriod 
-            maxBorrow={maxBorrow} 
-            isFirstTimeBuyer={isFirstTimeBuyer} 
-            hasSecondApplicant={numberOfApplicants > 1}
-            housePrice={housePrice}
-            sethousePrice={sethousePrice}
-            setMortgageAmount={setMortgageAmount}
-            />
+            <DepositSavingPeriod maxBorrow={maxBorrow} isFirstTimeBuyer={isFirstTimeBuyer} hasSecondApplicant={numberOfApplicants > 1}/>
           </div>
         </div>
         <div class="mod">
           <div class="section">
-          <MortgageDetails 
-          isFirstTimeBuyer={isFirstTimeBuyer} 
-          housePrice={housePrice}
-          mortgageAmount={mortgageAmount}
-          />
+          <MortgageDetails isFirstTimeBuyer={isFirstTimeBuyer} />
           </div>
         </div>
         <div class="fp">
@@ -56,8 +43,7 @@ function App() {
           <FinancialPlanner isFirstTimeBuyer={isFirstTimeBuyer} />
           </div>
         </div>
-        <p>House Price: {housePrice}</p>
-        <a class="p-3 image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
+        <a class="image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>
   );
