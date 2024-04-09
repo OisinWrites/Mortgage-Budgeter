@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { calculateNetIncome } from '../utilities/taxCalc';
 
 const FinancialPlanner = ({
   grossIncome1,
@@ -9,6 +10,13 @@ const FinancialPlanner = ({
   const [savingsRate, setSavingsRate] = useState(100); // As a percentage
   const [savingsGoal, setSavingsGoal] = useState('');
   const [monthlyExpenditure, setMonthlyExpenditure] = useState('');
+
+  const netIncome1 = calculateNetIncome(grossIncome1);
+  
+  let netIncome2 = 0;
+  if (hasSecondApplicant && grossIncome2) {
+    netIncome2 = calculateNetIncome(grossIncome2);
+  }
 
   const calculateMonthlySavings = (annualIncome) => {
     const monthlyIncome = annualIncome / 12;
@@ -35,11 +43,14 @@ const FinancialPlanner = ({
         <div>
           <label>Gross Annual Income for Applicant #1 (€):</label>
           <input type="number" value={grossIncome1 || ''} readOnly />
+          <p>Net Annual Income for Applicant #1: €{netIncome1.toFixed(2)}</p>
+          
         </div>
         {hasSecondApplicant && (
           <div>
             <label>Gross Annual Income for Applicant #2 (€):</label>
             <input type="number" value={grossIncome2 || ''} readOnly />
+            <p>Net Annual Income for Applicant #2: €{netIncome2.toFixed(2)}</p>
           </div>
         )}
         <div>
