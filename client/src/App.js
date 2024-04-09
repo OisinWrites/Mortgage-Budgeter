@@ -17,10 +17,15 @@ function App() {
   const [netIncome2, setNetIncome2] = useState('');
   const [totalAnnualFees, setTotalAnnualFees] = useState(0);
   const [applicantIncomes, setApplicantIncomes] = useState([null]);
+  const [loanTerm, setLoanTerm] = useState('');
 
   // Function to be passed to DepositSavingPeriod
   const updateTotalAnnualFees = (newTotal) => {
       setTotalAnnualFees(newTotal);
+  };
+
+  const handleLoanTermChange = (term) => {
+    setLoanTerm(term);
   };
 
   // Handler to update gross incomes
@@ -71,37 +76,24 @@ function App() {
         <div class="mod">
           <div class="section pb-3">
           <MortgageDetails
-           isFirstTimeBuyer={isFirstTimeBuyer}
-           housePrice={housePrice}
-           mortgageDesired={mortgageDesired}
-            />
+            isFirstTimeBuyer={isFirstTimeBuyer}
+            housePrice={housePrice}
+            mortgageDesired={mortgageDesired}
+            onLoanTermChange={handleLoanTermChange}
+          />
           </div>
         </div>
         <div class="fp">
           <div class="section mb-3">
           <FinancialPlanner
+            applicantIncomes={applicantIncomes}
             hasSecondApplicant={numberOfApplicants > 1}
-            totalAnnualFees={totalAnnualFees} 
-            netIncome={netIncome} 
-            netIncome2={netIncome2}             
+            totalAnnualFees={totalAnnualFees}        
+            loanTerm={loanTerm}
           />
           </div>
         </div>
-        <div>
-          {applicantIncomes.map((income, index) => (
-            <div key={index}>
-              <p>Applicant #{index + 1}: €{income || 'Not provided'}</p>
-            </div>
-          ))}
-        </div>
 
-        <div>
-          {applicantIncomes.slice(0, numberOfApplicants).map((income, index) => (
-            <div key={index}>
-              <p>Applicant #{index + 1}: €{income || 'Not provided'}</p>
-            </div>
-          ))}
-        </div>
         <a class="image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>

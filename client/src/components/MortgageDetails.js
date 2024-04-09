@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired }) => {
+const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired, onLoanTermChange }) => {
   const [loanTerm, setLoanTerm] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
@@ -45,7 +45,10 @@ const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired }) => {
   
     setMonthlyPayment(monthlyPayment);
     setRepaymentSchedule(schedule);
-  }, [mortgageDesired, loanTerm, interestRate]);
+
+    // Call the callback function to pass the loan term value to the parent component
+    onLoanTermChange(loanTerm);
+  }, [mortgageDesired, loanTerm, interestRate, onLoanTermChange]);
 
   return (
     <div>

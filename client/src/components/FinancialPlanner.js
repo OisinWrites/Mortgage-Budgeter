@@ -1,80 +1,110 @@
-import React, { useState } from 'react';
-import { calculateNetIncome } from '../utilities/taxCalc';
+import React, { useState, useEffect  } from 'react';
+import { calculateTaxDetails } from '../utilities/taxCalc.js';
 
 const FinancialPlanner = ({
-  grossIncome1,
-  grossIncome2,
-  totalAnnualFees,
-  hasSecondApplicant,
-}) => {
-  const [savingsRate, setSavingsRate] = useState(100); // As a percentage
-  const [savingsGoal, setSavingsGoal] = useState('');
-  const [monthlyExpenditure, setMonthlyExpenditure] = useState('');
+    totalAnnualFees,
+    loanTerm,
+    hasSecondApplicant,
+    applicantIncomes
+  }) => {
 
-  const netIncome1 = calculateNetIncome(grossIncome1);
-  
-  let netIncome2 = 0;
-  if (hasSecondApplicant && grossIncome2) {
-    netIncome2 = calculateNetIncome(grossIncome2);
-  }
+  const grossIncome1 = applicantIncomes[0] || 0;
+  const grossIncome2 = hasSecondApplicant ? (applicantIncomes[1] || 0) : 0;
 
-  const calculateMonthlySavings = (annualIncome) => {
-    const monthlyIncome = annualIncome / 12;
-    const surplus = monthlyIncome - monthlyExpenditure;
-    return (surplus * savingsRate) / 100;
+  const [annualHomeownerFees, setAnnualHomeownerFees] = useState(totalAnnualFees);
+
+  const [rentARoomIncome1, setRentARoomIncome1] = useState('');
+  const [rentARoomIncome2, setRentARoomIncome2] = useState('');
+
+  const taxDetails1 = calculateTaxDetails(grossIncome1);
+  let taxDetails2 = hasSecondApplicant ? calculateTaxDetails(grossIncome2) : null;
+
+  useEffect(() => {
+    if (hasSecondApplicant) {
+      setAnnualHomeownerFees(totalAnnualFees / 2);
+    } else {
+      setAnnualHomeownerFees(totalAnnualFees);
+    }
+  }, [totalAnnualFees, hasSecondApplicant]);
+
+  const handleRentARoomIncomeChange1 = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+      if (value > 14000 / 12) {
+        setRentARoomIncome1(14000 / 12);
+        alert("Rent a Room tax relief is capped at €14000 per annum.");
+      } else {
+        setRentARoomIncome1(value);
+      }
+    } else {
+      setRentARoomIncome1('');
+    }
   };
 
-  const calculateMonthsToReachGoal = (monthlySavings, goalAmount) => {
-    if (!goalAmount || monthlySavings <= 0) return "Goal not achievable with current setup";
-    const months = goalAmount / monthlySavings;
-    return Math.ceil(months); // Round up to the nearest whole month
+  const handleRentARoomIncomeChange2 = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+      if (value > 14000 / 12) {
+        setRentARoomIncome2(14000 / 12);
+        alert("Rent a Room tax relief is capped at €14000 per annum.");
+      } else {
+        setRentARoomIncome2(value);
+      }
+    } else {
+      setRentARoomIncome2('');
+    }
   };
 
-  const monthlySavings1 = calculateMonthlySavings(grossIncome1 || 0);
-  const monthlySavings2 = hasSecondApplicant ? calculateMonthlySavings(grossIncome2 || 0) : 0;
-  const totalMonthlySavings = monthlySavings1 + monthlySavings2;
-
-  const monthsToGoal = calculateMonthsToReachGoal(totalMonthlySavings, savingsGoal);
+  ;
 
   return (
     <div>
       <h2>Financial Planner</h2>
-      <div className="split-middle">
+      <div class="">
+        <p>{loanTerm}</p>
         <div>
-          <label>Gross Annual Income for Applicant #1 (€):</label>
-          <input type="number" value={grossIncome1 || ''} readOnly />
-          <p>Net Annual Income for Applicant #1: €{netIncome1.toFixed(2)}</p>
-          
-        </div>
-        {hasSecondApplicant && (
-          <div>
-            <label>Gross Annual Income for Applicant #2 (€):</label>
-            <input type="number" value={grossIncome2 || ''} readOnly />
-            <p>Net Annual Income for Applicant #2: €{netIncome2.toFixed(2)}</p>
-          </div>
-        )}
-        <div>
-          <label>Monthly Expenditure (€):</label>
-          <input type="number" value={monthlyExpenditure} onChange={(e) => setMonthlyExpenditure(Number(e.target.value))} />
-        </div>
-        <div>
-          <label>Savings Rate (%):</label>
-          <input
-            type="number"
-            value={savingsRate}
-            onChange={(e) => setSavingsRate(Math.min(100, Math.max(1, Number(e.target.value))))}
-            min="1"
-            max="100"
-          />
-        </div>
-        <div>
-          <label>Savings Goal (€):</label>
-          <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
-        </div>
-      </div>
+          <p>Gross Income: €{grossIncome1.toFixed(2)}</p>
+          <p>PAYE: €{taxDetails1.paye.toFixed(2)}</p>
+          <p>USC: €{taxDetails1.usc.toFixed(2)}</p>
+          <p>PRSI: €{taxDetails1.prsi.toFixed(2)}</p>
+          <p>Tax Credits: €{taxDetails1?.taxCredits?.toFixed(2)}</p>
+          <p>Net Income: €{taxDetails1?.netIncome?.toFixed(2)}</p>
+          <p>Net Monthly: €{taxDetails1?.netMonthlyIncome?.toFixed(2)}</p>
+          <p>Net Weekly: €{taxDetails1?.netWeeklyIncome?.toFixed(2)}</p>
+          <p>Annual Homeowner Fees: €{annualHomeownerFees.toFixed(2)}</p>
+          <label>
+            Rent a Room Monthly Income:
+            <input 
+              type="number"
+              value={rentARoomIncome1}
+              onChange={handleRentARoomIncomeChange1}
+            />
+          </label>
 
-      <div className="p-3">
-        <h6>Months to Reach Goal: {monthsToGoal}</h6>
+          {hasSecondApplicant && taxDetails2 && (
+            <>
+              <p>Gross Income: €{grossIncome2.toFixed(2)}</p>
+              <p>PAYE: €{taxDetails2.paye.toFixed(2)}</p>
+              <p>USC: €{taxDetails2.usc.toFixed(2)}</p>
+              <p>PRSI: €{taxDetails2.prsi.toFixed(2)}</p>
+              <p>Tax Credits: €{taxDetails2?.taxCredits?.toFixed(2)}</p>
+              <p>Net Income: €{taxDetails2?.netIncome?.toFixed(2)}</p>
+              <p>Net Monthly: €{taxDetails2?.netMonthlyIncome?.toFixed(2)}</p>
+              <p>Net Weekly: €{taxDetails2?.netWeeklyIncome?.toFixed(2)}</p>
+              <p>Annual Homeowner Fees: €{annualHomeownerFees.toFixed(2)}</p>
+              <label>
+                Rent a Room Monthly Income:
+                <input 
+                  type="number"
+                  value={rentARoomIncome2}
+                  onChange={handleRentARoomIncomeChange2}
+                />
+              </label>
+
+            </>
+          )}
+
+        </div>
       </div>
     </div>
   );
