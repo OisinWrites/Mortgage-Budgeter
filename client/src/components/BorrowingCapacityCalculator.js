@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 // Corrected the component definition with proper function syntax
-const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, setMaxBorrow, setNumberOfApplicants }) => {
+const BorrowingCapacityCalculator = ({ 
+  isFirstTimeBuyer, 
+  setIsFirstTimeBuyer, 
+  setMaxBorrow, 
+  setNumberOfApplicants,
+  applicantIncomes,
+  onIncomeChange
+  }) => {
   const [numberOfApplicants, setInternalNumberOfApplicants] = useState(1);
-  const [applicantIncomes, setApplicantIncomes] = useState(Array(numberOfApplicants).fill(null));
   const [multiplier, setMultiplier] = useState(3.5);
   const [manualMaxBorrow, setManualMaxBorrow] = useState('');
   const [propertyValue, setPropertyValue] = useState(0);
@@ -27,17 +33,6 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
     setMaxBorrow(calculatedEffectiveMaxBorrow);
 
   }, [applicantIncomes, multiplier, manualMaxBorrow, isFirstTimeBuyer, setMaxBorrow]);
-
-  useEffect(() => {
-    // Update the array size when number of applicants changes
-    setApplicantIncomes(Array(numberOfApplicants).fill(null));
-  }, [numberOfApplicants]);
-
-  const handleIncomeChange = (index, value) => {
-    const newIncomes = [...applicantIncomes];
-    newIncomes[index] = Number(value) || null; // Corrected to handle empty string and convert to null
-    setApplicantIncomes(newIncomes);
-  };
 
   const toggleExemption = () => {
     setMultiplier(multiplier === 3.5 ? 4.5 : 3.5);
@@ -106,7 +101,7 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
                     type="number"
                     value={applicantIncomes[index] || ''}
                     placeholder="0"
-                    onChange={(e) => handleIncomeChange(index, e.target.value)}
+                    onChange={(e) => onIncomeChange(index, e.target.value)}
                   />
                 </div>
               </div>

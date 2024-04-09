@@ -16,10 +16,18 @@ function App() {
   const [netIncome, setNetIncome] = useState('');
   const [netIncome2, setNetIncome2] = useState('');
   const [totalAnnualFees, setTotalAnnualFees] = useState(0);
+  const [applicantIncomes, setApplicantIncomes] = useState([null]);
 
-    // Function to be passed to DepositSavingPeriod
+  // Function to be passed to DepositSavingPeriod
   const updateTotalAnnualFees = (newTotal) => {
       setTotalAnnualFees(newTotal);
+  };
+
+  // Handler to update gross incomes
+  const handleIncomeChange = (index, value) => {
+    const newIncomes = [...applicantIncomes];
+    newIncomes[index] = Number(value) || null;
+    setApplicantIncomes(newIncomes);
   };
 
   return (
@@ -33,6 +41,8 @@ function App() {
         <div class="bcc">
           <div class="section">
             <BorrowingCapacityCalculator
+              applicantIncomes={applicantIncomes}
+              onIncomeChange={handleIncomeChange}
               setMaxBorrow={setMaxBorrow}
               isFirstTimeBuyer={isFirstTimeBuyer}
               setIsFirstTimeBuyer={setIsFirstTimeBuyer}
@@ -42,7 +52,10 @@ function App() {
         </div>
         <div class="dsp">
           <div class="section">
-            <DepositSavingPeriod maxBorrow={maxBorrow} isFirstTimeBuyer={isFirstTimeBuyer} hasSecondApplicant={numberOfApplicants > 1}
+            <DepositSavingPeriod 
+            maxBorrow={maxBorrow} 
+            isFirstTimeBuyer={isFirstTimeBuyer} 
+            hasSecondApplicant={numberOfApplicants > 1}
             updateTotalAnnualFees={updateTotalAnnualFees}
             housePrice={housePrice}
             setHousePrice={setHousePrice}
@@ -67,11 +80,27 @@ function App() {
         <div class="fp">
           <div class="section mb-3">
           <FinancialPlanner
+            hasSecondApplicant={numberOfApplicants > 1}
             totalAnnualFees={totalAnnualFees} 
             netIncome={netIncome} 
             netIncome2={netIncome2}             
           />
           </div>
+        </div>
+        <div>
+          {applicantIncomes.map((income, index) => (
+            <div key={index}>
+              <p>Applicant #{index + 1}: €{income || 'Not provided'}</p>
+            </div>
+          ))}
+        </div>
+
+        <div>
+          {applicantIncomes.slice(0, numberOfApplicants).map((income, index) => (
+            <div key={index}>
+              <p>Applicant #{index + 1}: €{income || 'Not provided'}</p>
+            </div>
+          ))}
         </div>
         <a class="image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
