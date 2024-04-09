@@ -1,5 +1,5 @@
 import React, { useState, useEffect  } from 'react';
-import { calculateTaxDetails } from '../utilities/taxCalc.js';
+import { calculateTaxDetails } from './utilities/taxCalc.js';
 
 const FinancialPlanner = ({
     totalAnnualFees,
