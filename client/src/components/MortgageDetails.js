@@ -41,7 +41,7 @@ const MortgageDetails = ({ isFirstTimeBuyer }) => {
       <form onSubmit={handleSubmit}>
         <div class="split-middle">
           <div>
-            <label>Estimated Value of Property:</label>
+            <label>Value of Property:</label>
             <input
               type="number"
               value={purchasePrice}

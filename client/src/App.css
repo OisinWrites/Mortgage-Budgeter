@@ -2,6 +2,7 @@
   text-align: center;
   position: relative;
   background-color: #eff1f3;
+  overflow-x: hidden;
 }
 
 .App-logo {
@@ -85,11 +86,15 @@
 .split-middle div input {
   flex-grow: 1;
   text-align: left;
+  max-width: 45vw;
+  margin-right: 1rem;
 }
 
 .split {
   flex-grow: 1;
   text-align: left;
+  max-width: 45vw;
+  margin-right: 1rem;
 }
 
 .mortgage-budgeteer label {
@@ -99,10 +104,14 @@
 
 .additional-fees {
   text-align: right;
-  padding-right: 4rem;
+  padding-right: 2rem;
 }
 
 .additional-fees label, p {
   font-size: 80%;
   margin-bottom: 0.2rem !important;
+}
+
+.image-credit {
+  color: #282c34;
 }

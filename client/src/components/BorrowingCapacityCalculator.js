@@ -60,14 +60,14 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
       <h2>Borrowing Capacity Calculator</h2>
       <div class="split-middle">
         <div>
-          <label>First-time buyer?</label>
+          <label>First-time buyer:</label>
           <select class="split limit-width" onChange={(e) => setIsFirstTimeBuyer(e.target.value === 'yes')}>
             <option value="yes">Yes</option>
             <option value="no">No</option>
           </select>
         </div>
         <div>
-          <label>Number of Applicants:</label>
+          <label>Applicants:</label>
           <select class="split limit-width" value={numberOfApplicants} onChange={handleNumberOfApplicantsChange}>
             <option value={1}>1</option>
             <option value={2}>2</option>
@@ -100,8 +100,9 @@ const BorrowingCapacityCalculator = ({ isFirstTimeBuyer, setIsFirstTimeBuyer, se
             <div class="split-middle">
               <div>
                 <div key={index}>
-                  <label>Annual Gross Income #{index + 1}:</label>
+                  <label>Gross Salary #{index + 1}:</label>
                   <input
+                    class="split"
                     type="number"
                     value={applicantIncomes[index] || ''}
                     placeholder="0"

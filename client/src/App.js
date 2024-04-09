@@ -39,11 +39,11 @@ function App() {
           </div>
         </div>
         <div class="fp">
-          <div class="section">
+          <div class="section mb-3">
           <FinancialPlanner isFirstTimeBuyer={isFirstTimeBuyer} />
           </div>
         </div>
-        <a class="pb-3" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
+        <a class="p-3 image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>
   );
