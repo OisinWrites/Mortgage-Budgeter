@@ -1,13 +1,4 @@
-// mortgageInterestCalc.js
-
-/**
- * Calculates the monthly mortgage payment.
- * @param {number} principal - The principal loan amount.
- * @param {number} annualInterestRate - The annual interest rate (as a percentage).
- * @param {number} termYears - The term of the loan in years.
- * @returns {number} The monthly payment amount.
- */
-export const calculateMonthlyPayment = (principal, annualInterestRate, termYears) => {
+export const calculateMonthlyMortgagePayment = (principal, annualInterestRate, termYears) => {
     const monthlyInterestRate = annualInterestRate / 12 / 100;
     const loanTermMonths = termYears * 12;
     const monthlyPayment = principal * 
@@ -15,19 +6,12 @@ export const calculateMonthlyPayment = (principal, annualInterestRate, termYears
     return monthlyPayment;
   };
   
-  /**
-   * Generates a repayment schedule for each year of the mortgage term.
-   * @param {number} principal - The principal loan amount.
-   * @param {number} annualInterestRate - The annual interest rate (as a percentage).
-   * @param {number} termYears - The term of the loan in years.
-   * @returns {Array} An array of objects containing repayment information per year.
-   */
   export const generateRepaymentSchedule = (principal, annualInterestRate, termYears) => {
     const monthlyInterestRate = annualInterestRate / 12 / 100;
     const loanTermMonths = termYears * 12;
-    const monthlyPayment = calculateMonthlyPayment(principal, annualInterestRate, termYears);
+    const monthlyPayment = calculateMonthlyMortgagePayment(principal, annualInterestRate, termYears);
   
-    let schedule = [];
+    let repaymentSchedule = [];
     let remainingBalance = principal;
   
     for (let year = 1; year <= termYears; year++) {
@@ -50,7 +34,7 @@ export const calculateMonthlyPayment = (principal, annualInterestRate, termYears
         remainingBalance = 0;
       }
   
-      schedule.push({
+      repaymentSchedule.push({
         year,
         openingBalance: remainingBalance + capitalRepayment, // Adjusted for the loop's decrement
         annualInterestCharged,
@@ -58,6 +42,6 @@ export const calculateMonthlyPayment = (principal, annualInterestRate, termYears
       });
     }
   
-    return schedule;
+    return repaymentSchedule;
   };
   

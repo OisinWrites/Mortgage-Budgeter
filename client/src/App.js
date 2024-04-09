@@ -18,6 +18,8 @@ function App() {
   const [totalAnnualFees, setTotalAnnualFees] = useState(0);
   const [applicantIncomes, setApplicantIncomes] = useState([null]);
   const [loanTerm, setLoanTerm] = useState('');
+  const [monthlyPayment, setMonthlyPayment] = useState(0);
+
 
   // Function to be passed to DepositSavingPeriod
   const updateTotalAnnualFees = (newTotal) => {
@@ -38,7 +40,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 class="display-1">Life Ladder</h1>
+        <h1 className="display-1">Life Ladder</h1>
         <br></br>
         <h2>Mortgage and Savings Calculator</h2>
       </header>
@@ -76,6 +78,7 @@ function App() {
         <div class="mod">
           <div class="section pb-3">
           <MortgageDetails
+            updateMonthlyPayment={setMonthlyPayment}
             isFirstTimeBuyer={isFirstTimeBuyer}
             housePrice={housePrice}
             mortgageDesired={mortgageDesired}
@@ -86,6 +89,7 @@ function App() {
         <div class="fp">
           <div class="section mb-3">
           <FinancialPlanner
+            monthlyPayment={monthlyPayment}
             applicantIncomes={applicantIncomes}
             hasSecondApplicant={numberOfApplicants > 1}
             totalAnnualFees={totalAnnualFees}        

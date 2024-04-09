@@ -1,54 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { calculateMonthlyMortgagePayment, generateRepaymentSchedule } from './utilities/mortgageInterestCalc.js';
 
-const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired, onLoanTermChange }) => {
+const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired, onLoanTermChange, updateMonthlyPayment }) => {
   const [loanTerm, setLoanTerm] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [repaymentSchedule, setRepaymentSchedule] = useState([]);
 
   useEffect(() => {
-    const monthlyInterestRate = interestRate / 12 / 100;
-    const loanTermMonths = loanTerm * 12;
-    const monthlyPayment = mortgageDesired * 
-      (monthlyInterestRate / (1 - Math.pow(1 + monthlyInterestRate, -loanTermMonths)));
-  
-    let schedule = [];
-    let remainingBalance = mortgageDesired;
-  
-    for (let year = 1; year <= loanTerm; year++) {
-      let annualInterestCharged = 0;
-      let capitalRepayment = 0;
-  
-      for (let month = 1; month <= 12; month++) {
-        let interestForMonth = remainingBalance * monthlyInterestRate;
-        let principalRepaymentForMonth = monthlyPayment - interestForMonth;
-        remainingBalance -= principalRepaymentForMonth;
-  
-        // Accumulate totals for the year
-        annualInterestCharged += interestForMonth;
-        capitalRepayment += principalRepaymentForMonth;
-      }
-  
-      // Correct for potential negative remaining balance in the last year
-      if (remainingBalance < 0) {
-        capitalRepayment += remainingBalance; // Subtract since remainingBalance is negative
-        remainingBalance = 0;
-      }
-  
-      schedule.push({
-        year,
-        openingBalance: remainingBalance + capitalRepayment, // Adjusted for the loop's decrement
-        annualInterestCharged,
-        capitalRepayment,
-      });
+    if (mortgageDesired && loanTerm && interestRate) {
+      const payment = calculateMonthlyMortgagePayment(mortgageDesired, interestRate, loanTerm);
+      const schedule = generateRepaymentSchedule(mortgageDesired, interestRate, loanTerm);
+      setMonthlyPayment(payment);
+      setRepaymentSchedule(schedule);
+      updateMonthlyPayment(payment);
     }
-  
-    setMonthlyPayment(monthlyPayment);
-    setRepaymentSchedule(schedule);
-
-    // Call the callback function to pass the loan term value to the parent component
-    onLoanTermChange(loanTerm);
-  }, [mortgageDesired, loanTerm, interestRate, onLoanTermChange]);
+  }, [mortgageDesired, loanTerm, interestRate, updateMonthlyPayment]);
 
   return (
     <div>
