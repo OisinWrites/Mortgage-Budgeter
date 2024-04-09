@@ -1,96 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const FinancialPlanner = ({ netIncome, netIncome2, totalAnnualFees }) => {
-  const [monthlyIncome, setMonthlyIncome] = useState(null);
-  const [monthlyIncome2, setMonthlyIncome2] = useState(null);
-  const [monthlyExpenditure, setMonthlyExpenditure] = useState(null);
+const FinancialPlanner = ({
+  grossIncome1,
+  grossIncome2,
+  totalAnnualFees,
+  hasSecondApplicant,
+}) => {
   const [savingsRate, setSavingsRate] = useState(100); // As a percentage
-  const [savingsGoal, setSavingsGoal] = useState(null);
+  const [savingsGoal, setSavingsGoal] = useState('');
+  const [monthlyExpenditure, setMonthlyExpenditure] = useState('');
 
-  const surplus = monthlyIncome - monthlyExpenditure;
-  const monthlySavings = (surplus * savingsRate) / 100;
+  const calculateMonthlySavings = (annualIncome) => {
+    const monthlyIncome = annualIncome / 12;
+    const surplus = monthlyIncome - monthlyExpenditure;
+    return (surplus * savingsRate) / 100;
+  };
 
   const calculateMonthsToReachGoal = (monthlySavings, goalAmount) => {
-    if (monthlySavings <= 0) return "-"; // If monthly savings is 0 or negative, the goal is unattainable.
+    if (!goalAmount || monthlySavings <= 0) return "Goal not achievable with current setup";
     const months = goalAmount / monthlySavings;
     return Math.ceil(months); // Round up to the nearest whole month
   };
 
-  const handleSavingsRateChange = (event) => {
-    let value = Number(event.target.value);
-    value = Math.max(1, Math.min(100, value));
-    setSavingsRate(value);
-  };
-  
-  const monthsToGoal = calculateMonthsToReachGoal(monthlySavings, savingsGoal);
+  const monthlySavings1 = calculateMonthlySavings(grossIncome1 || 0);
+  const monthlySavings2 = hasSecondApplicant ? calculateMonthlySavings(grossIncome2 || 0) : 0;
+  const totalMonthlySavings = monthlySavings1 + monthlySavings2;
 
-  const adjustSavingsRateForInsight = (adjustment) => {
-    const newRate = Math.min(100, Math.max(0, savingsRate + adjustment)); // Ensure between 0 and 100%
-    const newMonthlySavings = (surplus * newRate) / 100;
-    return calculateMonthsToReachGoal(newMonthlySavings, savingsGoal);
-  };
-
-  useEffect(() => {
-    setMonthlyIncome(netIncome);
-    if (netIncome2 !== '0') {
-      setMonthlyIncome2(netIncome2);
-    }
-  }, [netIncome, netIncome2]);
+  const monthsToGoal = calculateMonthsToReachGoal(totalMonthlySavings, savingsGoal);
 
   return (
     <div>
-
       <h2>Financial Planner</h2>
-
-      <div>
-        <div class="split-middle">
+      <div className="split-middle">
+        <div>
+          <label>Gross Annual Income for Applicant #1 (€):</label>
+          <input type="number" value={grossIncome1 || ''} readOnly />
+        </div>
+        {hasSecondApplicant && (
           <div>
-            <label>Monthly Income (€):</label>
-            <input type="number" value={monthlyIncome} onChange={(e) => setMonthlyIncome(Number(e.target.value))} />
+            <label>Gross Annual Income for Applicant #2 (€):</label>
+            <input type="number" value={grossIncome2 || ''} readOnly />
           </div>
-          <div>
-            <label>Monthly Expenditure (€):</label>
-            <input type="number" value={monthlyExpenditure} onChange={(e) => setMonthlyExpenditure(Number(e.target.value))} />
-          </div>
-          <div>
-            <label>Savings Rate (%):</label>
-            <input
-              type="number"
-              value={savingsRate}
-              onChange={handleSavingsRateChange} // Use the new handler here
-              min="1"
-              max="100"
-              placeholder="Savings Rate (%)"
-            />
-          </div>
-          <div>
-            <label>Savings Goal (€):</label>
-            <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
-          </div>
+        )}
+        <div>
+          <label>Monthly Expenditure (€):</label>
+          <input type="number" value={monthlyExpenditure} onChange={(e) => setMonthlyExpenditure(Number(e.target.value))} />
+        </div>
+        <div>
+          <label>Savings Rate (%):</label>
+          <input
+            type="number"
+            value={savingsRate}
+            onChange={(e) => setSavingsRate(Math.min(100, Math.max(1, Number(e.target.value))))}
+            min="1"
+            max="100"
+          />
+        </div>
+        <div>
+          <label>Savings Goal (€):</label>
+          <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(Number(e.target.value))} />
         </div>
       </div>
 
-      {netIncome2 !== '0' && (
-        <div>
-          <h3>Second Applicant</h3>
-          <div className="split-middle">
-            {/* Duplicate the questionnaire for the second applicant */}
-            <div>
-              <label>Monthly Income (€):</label>
-              <input type="number" value={monthlyIncome2} onChange={(e) => setMonthlyIncome2(Number(e.target.value))} />
-            </div>
-            {/* Add other inputs as needed */}
-          </div>
-        </div>
-      )}
-
-
-      <div class="p-3">
-        <p>Increase savings rate by 5% to reach the goal in {adjustSavingsRateForInsight(5)} months.</p>
-        <p>Increase savings rate by 10% to reach the goal in {adjustSavingsRateForInsight(10)} months.</p>
-        <h6 class="strong">Months to Reach Goal: {monthsToGoal === Infinity ? "" : monthsToGoal}</h6>
-        <div>
-      </div>
+      <div className="p-3">
+        <h6>Months to Reach Goal: {monthsToGoal}</h6>
       </div>
     </div>
   );
