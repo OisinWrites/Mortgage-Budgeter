@@ -1,6 +1,6 @@
 import React, { useState, useEffect  } from 'react';
 import { calculateTaxDetails } from './utilities/taxCalc.js';
-import { calculateMonthlyMortgagePayment, generateRepaymentSchedule } from './utilities/mortgageInterestCalc.js';
+import { generateRepaymentSchedule } from './utilities/mortgageInterestCalc.js';
 import { calculateAdjustedSalaries }from './utilities/IncomeAdjustments.js';
 
 const FinancialPlanner = ({
@@ -9,10 +9,12 @@ const FinancialPlanner = ({
     hasSecondApplicant,
     applicantIncomes,
     monthlyPayment,
-    principal,
     annualInterestRate,
     mortgageDesired
   }) => {
+
+  const [capitalGains1, setCapitalGains1] = useState('');
+  const [capitalGains2, setCapitalGains2] = useState('');
 
   const [repaymentSchedule, setRepaymentSchedule] = useState([]);
 
@@ -23,9 +25,6 @@ const FinancialPlanner = ({
   const [showRaisesDiv2, setShowRaisesDiv2] = useState(false);
   const [annualSavings1, setAnnualSavings1] = useState(0);
   const [annualSavings2, setAnnualSavings2] = useState(0);
-
-  const [yearsUntilSavingsExceed1, setYearsUntilSavingsExceed1] = useState(-1);
-  const [yearsUntilSavingsExceed2, setYearsUntilSavingsExceed2] = useState(-1);
 
   const [annualHomeownerFees, setAnnualHomeownerFees] = useState(totalAnnualFees);
 
@@ -54,15 +53,6 @@ const FinancialPlanner = ({
 
   const toggleRaisesDiv2 = () => {
     setShowRaisesDiv2(!showRaisesDiv2);
-  };
-
-  // Function to close the raises div
-  const closeRaisesDiv = () => {
-    setShowRaisesDiv(false);
-  };
-
-  const closeRaisesDiv2 = () => {
-    setShowRaisesDiv2(false);
   };
 
   const initRaisesAndBonuses = (loanTerm) => Array.from({length: loanTerm}, () => ({ raise: 0, bonus: 0 }));
@@ -121,44 +111,7 @@ const FinancialPlanner = ({
   useEffect(() => {
     setSalaryRaisesAndBonuses1(initRaisesAndBonuses(loanTerm));
     setSalaryRaisesAndBonuses2(initRaisesAndBonuses(loanTerm));
-  }, [loanTerm]);
-
-  useEffect(() => {
-    const taxDetails1 = calculateTaxDetails(grossIncome1);
-    const rentIncomeAnnual1 = (parseFloat(rentARoomIncome1) || 0) * 12;
-    const totalIncomeAnnual1 = taxDetails1.netIncome + rentIncomeAnnual1;
-
-    const totalMonthlyOutgoings1 = parseFloat(splitMonthlyPayment1) + (parseFloat(monthlyDiscretionary1) || 0) + (parseFloat(monthlyBills1) || 0);
-    const totalOutAnnual1 = totalMonthlyOutgoings1 * 12 + annualHomeownerFees + (parseFloat(annualExpenses1) || 0);
-
-    setAnnualSavings1(totalIncomeAnnual1 - totalOutAnnual1);
-
-    if (hasSecondApplicant) {
-      const taxDetails2 = calculateTaxDetails(grossIncome2);
-      const rentIncomeAnnual2 = (parseFloat(rentARoomIncome2) || 0) * 12;
-      const totalIncomeAnnual2 = taxDetails2.netIncome + rentIncomeAnnual2;
-
-      const totalMonthlyOutgoings2 = parseFloat(splitMonthlyPayment2) + (parseFloat(monthlyDiscretionary2) || 0) + (parseFloat(monthlyBills2) || 0);
-      const totalOutAnnual2 = totalMonthlyOutgoings2 * 12 + annualHomeownerFees + (parseFloat(annualExpenses2) || 0);
-
-      setAnnualSavings2(totalIncomeAnnual2 - totalOutAnnual2);
-    }
-  }, [
-    grossIncome1,
-    grossIncome2,
-    rentARoomIncome1,
-    rentARoomIncome2,
-    splitMonthlyPayment1,
-    splitMonthlyPayment2,
-    monthlyDiscretionary1,
-    monthlyDiscretionary2,
-    monthlyBills1,
-    monthlyBills2,
-    annualExpenses1,
-    annualExpenses2,
-    annualHomeownerFees,
-    hasSecondApplicant
-  ]);
+  }, [loanTerm]);  
 
   useEffect(() => {
     if (hasSecondApplicant) {
@@ -182,8 +135,8 @@ const FinancialPlanner = ({
   const handleRentARoomIncomeChange1 = (e) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value)) {
-      if (value > 14000 / 12) {
-        setRentARoomIncome1(14000 / 12);
+      if (value > 14000) {
+        setRentARoomIncome1(14000);
         alert("Rent a Room tax relief is capped at €14000 per annum.");
       } else {
         setRentARoomIncome1(value);
@@ -196,8 +149,8 @@ const FinancialPlanner = ({
   const handleRentARoomIncomeChange2 = (e) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value)) {
-      if (value > 14000 / 12) {
-        setRentARoomIncome2(14000 / 12);
+      if (value > 14000) {
+        setRentARoomIncome2(14000);
         alert("Rent a Room tax relief is capped at €14000 per annum.");
       } else {
         setRentARoomIncome2(value);
@@ -219,14 +172,11 @@ const FinancialPlanner = ({
   const handleSavingGoalsChange2 = (e) => setSavingGoals2(e.target.value);
   const handleWindfallsChange2 = (e) => setWindfalls2(e.target.value);
 
-  // Calculate adjusted salaries and bonuses for both applicants
   const adjustedSalaries1 = calculateAdjustedSalaries(applicantIncomes[0], salaryRaisesAndBonuses1);
   const adjustedSalaries2 = hasSecondApplicant ? calculateAdjustedSalaries(applicantIncomes[1], salaryRaisesAndBonuses2) : [];
-
-  // Render the adjusted salaries and bonuses as lists
+ 
   const adjustedSalariesList1 = adjustedSalaries1
   .filter((item, index) => {
-    // Check if there's a raise or bonus for the year
     const raiseAndBonus = salaryRaisesAndBonuses1[index];
     return raiseAndBonus.raise !== 0 || raiseAndBonus.bonus !== 0;
   })
@@ -238,7 +188,6 @@ const FinancialPlanner = ({
 
   const adjustedSalariesList2 = adjustedSalaries2
   .filter((item, index) => {
-    // Check if there's a raise or bonus for the year
     const raiseAndBonus = salaryRaisesAndBonuses2[index];
     return raiseAndBonus.raise !== 0 || raiseAndBonus.bonus !== 0;
   })
@@ -248,14 +197,23 @@ const FinancialPlanner = ({
     </li>
   ));
 
+  // Function to calculate net income after tax for each year
+  const calculateNetIncomes = (grossIncomes, raisesAndBonuses) => {
+    return grossIncomes.map((income, index) => {
+      // Assuming tax calculation adjusts gross income based on raises and bonuses
+      const taxDetails = calculateTaxDetails(income + (raisesAndBonuses[index].bonus || 0));
+      return taxDetails.netIncome; // Assuming this is the net income after tax
+    });
+  };
+
   const renderNetIncomeList = (adjustedSalaries) => {
     if (!Array.isArray(adjustedSalaries)) {
       return null;
     }
     
     return adjustedSalaries.map((item, index) => {
-      const taxDetails = calculateTaxDetails(item.salary); // item.salary includes bonuses
-      const netIncome = taxDetails.netIncome; // Assuming calculateTaxDetails returns an object with a netIncome property
+      const taxDetails = calculateTaxDetails(item.salary);
+      const netIncome = taxDetails.netIncome;
       return (
         <li key={`net-income-${index}`}>
           Year {item.year}: Net Income - €{netIncome.toFixed(2)}
@@ -296,8 +254,61 @@ const FinancialPlanner = ({
           </div>
       ));
   }
+
+  // Function to calculate annual surplus
+  const calculateAnnualSurplus = (
+    income, roomRelief, bills, discretionary, annualExpenses, monthlyMortgagePayment, homeownerFees
+  ) => {
+    const monthlyCosts = (bills + discretionary) * 12;
+    const annualMortgagePayments = monthlyMortgagePayment * 12;
+    return income + roomRelief - monthlyCosts - annualExpenses - annualMortgagePayments - homeownerFees;
+  };
+
+  // Adjusted function to calculate the surpluses for each year in the loan term
+  const calculateSurpluses = (
+    netIncomes, roomIncomes, bills, discretionary, expenses, loanTerm, monthlyMortgagePayment, homeownerFees
+  ) => {
+    let surpluses = [];
+    let cumulativeSurplus = 0;
+
+    for (let year = 0; year < loanTerm; year++) {
+      const netIncome = netIncomes[year] || netIncomes[netIncomes.length - 1]; // Use the last known net income if beyond specified raises
+      const annualSurplus = netIncome + roomIncomes - ((bills + discretionary) * 12) - expenses - (monthlyMortgagePayment * 12) - homeownerFees;
+      cumulativeSurplus += annualSurplus;
+      surpluses.push({ annualSurplus, cumulativeSurplus });
+    }
+
+    return surpluses;
+  };
+
+  const netIncomes1 = calculateNetIncomes(adjustedSalaries1.map(item => item.salary), salaryRaisesAndBonuses1);
+  const surplusDetails1 = calculateSurpluses(
+    netIncomes1,
+    parseFloat(rentARoomIncome1) || 0,
+    parseFloat(monthlyBills1) || 0,
+    parseFloat(monthlyDiscretionary1) || 0,
+    parseFloat(annualExpenses1) || 0,
+    loanTerm,
+    parseFloat(splitMonthlyPayment1),
+    parseFloat(annualHomeownerFees)
+  );
   
-  // Using the adjusted salaries to calculate and render net incomes
+  let surplusDetails2 = [];
+  if (hasSecondApplicant) {
+    const netIncomes2 = calculateNetIncomes(adjustedSalaries2.map(item => item.salary), salaryRaisesAndBonuses2);
+    surplusDetails2 = calculateSurpluses(
+      netIncomes2,
+      parseFloat(rentARoomIncome2) || 0,
+      parseFloat(monthlyBills2) || 0,
+      parseFloat(monthlyDiscretionary2) || 0,
+      parseFloat(annualExpenses2) || 0,
+      loanTerm,
+      parseFloat(splitMonthlyPayment2),
+      parseFloat(annualHomeownerFees)
+    );
+  }
+
+
   const netIncomeList1 = adjustedSalaries1 ? renderNetIncomeList(adjustedSalaries1) : null;
   const netIncomeList2 = hasSecondApplicant ? renderNetIncomeList(adjustedSalaries2) : null;
 
@@ -326,6 +337,7 @@ const FinancialPlanner = ({
             )}
           </div>
           <ul>{adjustedSalariesList1}</ul>
+          <ul>{netIncomeList1}</ul>
           <label>
             Rent a Room Relief:
             <input 
@@ -338,6 +350,10 @@ const FinancialPlanner = ({
           <label>
             Windfalls:
             <input type="number" value={windfalls1} placeholder=" Tax-free amounts" onChange={handleWindfallsChange1} />
+          </label>
+          <label>
+            Capital Gains:
+            <input type="number" value={capitalGains1} onChange={(e) => setCapitalGains1(e.target.value)} placeholder=" 33% tax after €1270" />
           </label>
           <hr></hr>
           <p> {hasSecondApplicant && (<>Applicant 1's Half of</>)} Monthly Mortgage Payment: €{splitMonthlyPayment1.toFixed(2)}</p>
@@ -359,8 +375,25 @@ const FinancialPlanner = ({
             <input type="number" value={savingGoals1} onChange={handleSavingGoalsChange1} placeholder={' Non-mortgage targets'}/>
           </label>
           <hr></hr>
-          <p class="pb-3">Annual Surplus: €{annualSavings1.toFixed(2)}</p>
+          <div class="container pb-2">
+            <div class="spin-reel">
+              <div class="row">
+                <span class="col-2">Year</span>
+                <span class="col-5">Annual Surplus</span>
+                <span class="col-5">Cumulative Surplus</span>
+              </div>
+              <hr></hr>
+              {surplusDetails1.map((detail, index) => (
+                <div class="row" key={index}>
+                  <span class="col-2">{index + 1}:</span>
+                  <span class="col-5">€{detail.annualSurplus.toFixed(2)}</span>
+                  <span class="col-5">€{detail.cumulativeSurplus.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
         </div>
+
+          </div>
           </div>
 
         {hasSecondApplicant && taxDetails2 && (
@@ -386,13 +419,17 @@ const FinancialPlanner = ({
                   <input 
                     type="number"
                     value={rentARoomIncome2}
-                    onChange={handleRentARoomIncomeChange1}
+                    onChange={handleRentARoomIncomeChange2}
                     placeholder=' Tax-free if < €14k'
                   />
                 </label>
                 <label>
                   Windfalls:
                   <input type="number" value={windfalls2} placeholder=" Tax-free amounts" onChange={handleWindfallsChange2} />
+                </label>
+                <label>
+                  Capital Gains:
+                  <input type="number" value={capitalGains2} onChange={(e) => setCapitalGains2(e.target.value)} placeholder=" 33% tax after €1270" />
                 </label>
                 <hr></hr>
                 <p>Applicant 2's Half of Monthly Mortgage Payment: €{splitMonthlyPayment2.toFixed(2)}</p>
@@ -414,8 +451,23 @@ const FinancialPlanner = ({
                   <input type="number" value={savingGoals2} onChange={handleSavingGoalsChange2} placeholder={' Non-mortgage targets'}/>
                 </label>
                 <hr></hr>
-                <p class="pb-3">Annual Surplus: €{annualSavings2.toFixed(2)}</p>
-
+                <div class="container pb-2">
+                    <div class="spin-reel">
+                      <div class="row">
+                        <span class="col-2">Year</span>
+                        <span class="col-5">Annual Surplus</span>
+                        <span class="col-5">Cumulative Surplus</span>
+                      </div>
+                      <hr></hr>
+                      {surplusDetails2.map((detail, index) => (
+                        <div class="row" key={index}>
+                          <span class="col-2">{index + 1}:</span>
+                          <span class="col-5">€{detail.annualSurplus.toFixed(2)}</span>
+                          <span class="col-5">€{detail.cumulativeSurplus.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                </div>
               </div>
             </div>
 
