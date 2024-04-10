@@ -115,3 +115,26 @@
 .image-credit {
   color: #282c34;
 }
+
+/*---Financial Planner---*/
+.spin-reel {
+  background-color: #eff1f3;
+  max-height: 20vh;
+  overflow-y: auto;
+  padding: 1rem;
+  margin-top: 0.2rem;
+  border-color: 2px solid #282c34;
+  border-radius: 10px;
+}
+
+.applicant div {
+  text-align: right;
+}
+
+.applicant input {
+  margin-left: 0.5rem;;
+}
+
+.spin-reel::-webkit-scrollbar {
+  display: none;
+}

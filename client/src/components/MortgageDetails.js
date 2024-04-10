@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { calculateMonthlyMortgagePayment, generateRepaymentSchedule } from './utilities/mortgageInterestCalc.js';
 
-const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired, onLoanTermChange, updateMonthlyPayment }) => {
-  const [loanTerm, setLoanTerm] = useState('');
-  const [interestRate, setInterestRate] = useState('');
+const MortgageDetails = ({ 
+  isFirstTimeBuyer, 
+  housePrice, 
+  mortgageDesired, 
+  onLoanTermChange, 
+  updateMonthlyPayment, 
+  annualInterestRate, 
+  setAnnualInterestRate,
+  loanTerm,
+  setLoanTerm,
+  }) => {
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [repaymentSchedule, setRepaymentSchedule] = useState([]);
 
   useEffect(() => {
-    if (mortgageDesired && loanTerm && interestRate) {
-      const payment = calculateMonthlyMortgagePayment(mortgageDesired, interestRate, loanTerm);
-      const schedule = generateRepaymentSchedule(mortgageDesired, interestRate, loanTerm);
+    if (mortgageDesired && loanTerm && annualInterestRate) {
+      const payment = calculateMonthlyMortgagePayment(mortgageDesired, annualInterestRate, loanTerm);
+      const schedule = generateRepaymentSchedule(mortgageDesired, annualInterestRate, loanTerm);
       setMonthlyPayment(payment);
       setRepaymentSchedule(schedule);
       updateMonthlyPayment(payment);
     }
-  }, [mortgageDesired, loanTerm, interestRate, updateMonthlyPayment]);
+  }, [mortgageDesired, loanTerm, annualInterestRate, updateMonthlyPayment]);
 
   return (
     <div>
@@ -40,8 +48,8 @@ const MortgageDetails = ({ isFirstTimeBuyer, housePrice, mortgageDesired, onLoan
           <input
             type="number"
             step="0.01"
-            value={interestRate}
-            onChange={(e) => setInterestRate(e.target.value)}
+            value={annualInterestRate}
+            onChange={(e) => setAnnualInterestRate(e.target.value)}
           />
         </div>
       </div>

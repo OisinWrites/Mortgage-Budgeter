@@ -19,6 +19,7 @@ function App() {
   const [applicantIncomes, setApplicantIncomes] = useState([null]);
   const [loanTerm, setLoanTerm] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
+  const [annualInterestRate, setAnnualInterestRate] = useState(0);
 
 
   // Function to be passed to DepositSavingPeriod
@@ -44,9 +45,9 @@ function App() {
         <br></br>
         <h2>Mortgage and Savings Calculator</h2>
       </header>
-      <main class="mortgage-budgeteer pb-3">
-        <div class="bcc">
-          <div class="section">
+      <main className="mortgage-budgeteer pb-3">
+        <div className="bcc">
+          <div className="section">
             <BorrowingCapacityCalculator
               applicantIncomes={applicantIncomes}
               onIncomeChange={handleIncomeChange}
@@ -57,8 +58,8 @@ function App() {
             />
           </div>
         </div>
-        <div class="dsp">
-          <div class="section">
+        <div className="dsp">
+          <div className="section">
             <DepositSavingPeriod 
             maxBorrow={maxBorrow} 
             isFirstTimeBuyer={isFirstTimeBuyer} 
@@ -75,30 +76,35 @@ function App() {
             />
           </div>
         </div>
-        <div class="mod">
-          <div class="section pb-3">
+        <div className="mod">
+          <div className="section pb-3">
           <MortgageDetails
             updateMonthlyPayment={setMonthlyPayment}
             isFirstTimeBuyer={isFirstTimeBuyer}
             housePrice={housePrice}
+            annualInterestRate={annualInterestRate}
+            setAnnualInterestRate={setAnnualInterestRate}
             mortgageDesired={mortgageDesired}
             onLoanTermChange={handleLoanTermChange}
+            loanTerm={loanTerm}
+            setLoanTerm={setLoanTerm}
           />
           </div>
         </div>
-        <div class="fp">
-          <div class="section mb-3">
+        <div className="fp">
+          <div className="section mb-3">
           <FinancialPlanner
             monthlyPayment={monthlyPayment}
             applicantIncomes={applicantIncomes}
             hasSecondApplicant={numberOfApplicants > 1}
-            totalAnnualFees={totalAnnualFees}        
+            totalAnnualFees={totalAnnualFees}
+            mortgageDesired={mortgageDesired}
+            annualInterestRate={annualInterestRate}        
             loanTerm={loanTerm}
           />
           </div>
         </div>
-
-        <a class="image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
+        <a className="image-credit" target="_blank" rel="noopener noreferrer" href='https://pngtree.com/freepng/house-home-puppy-hand-drawing_4088450.html'>png image from pngtree.com/</a>
       </main>
     </div>
   );
