@@ -7,32 +7,31 @@ const BorrowingCapacityCalculator = ({
   setMaxBorrow, 
   setNumberOfApplicants,
   applicantIncomes,
-  onIncomeChange
+  onIncomeChange,
+  effectiveMaxBorrow,
+  setEffectiveMaxBorrow,
+  propertyValue
   }) => {
   const [numberOfApplicants, setInternalNumberOfApplicants] = useState(1);
   const [multiplier, setMultiplier] = useState(3.5);
   const [manualMaxBorrow, setManualMaxBorrow] = useState('');
-  const [propertyValue, setPropertyValue] = useState(0);
-  const [effectiveMaxBorrow, setEffectiveMaxBorrow] = useState(0);
   const [useManualInput, setUseManualInput] = useState(false);
 
   useEffect(() => {
     let calculatedEffectiveMaxBorrow = 0;
 
     if (manualMaxBorrow) {
+      // If there is a manual input for max borrow, use that value
       calculatedEffectiveMaxBorrow = Number(manualMaxBorrow);
     } else {
+      // Otherwise, calculate based on applicant incomes and multiplier
       const totalIncome = applicantIncomes.reduce((acc, curr) => acc + (curr || 0), 0);
       calculatedEffectiveMaxBorrow = totalIncome * multiplier;
     }
 
     setEffectiveMaxBorrow(calculatedEffectiveMaxBorrow);
 
-    const loanToValueRatio = isFirstTimeBuyer ? 0.9 : 0.8;
-    setPropertyValue(calculatedEffectiveMaxBorrow / loanToValueRatio);
-    setMaxBorrow(calculatedEffectiveMaxBorrow);
-
-  }, [applicantIncomes, multiplier, manualMaxBorrow, isFirstTimeBuyer, setMaxBorrow]);
+  }, [applicantIncomes, multiplier, manualMaxBorrow, setEffectiveMaxBorrow]);
 
   const toggleExemption = () => {
     setMultiplier(multiplier === 3.5 ? 4.5 : 3.5);
@@ -68,6 +67,24 @@ const BorrowingCapacityCalculator = ({
             <option value={2}>2</option>
           </select>
         </div>
+        
+          {[...Array(numberOfApplicants)].map((_, index) => (
+              <div class="split-middle">
+                <div>
+                  <div key={index}>
+                    <label>Gross Salary #{index + 1}:</label>
+                    <input
+                      class="split"
+                      type="number"
+                      value={applicantIncomes[index] || ''}
+                      placeholder="0"
+                      onChange={(e) => onIncomeChange(index, e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+     
       </div>
       {useManualInput ? (
         <div>
@@ -91,22 +108,6 @@ const BorrowingCapacityCalculator = ({
         </div>
       ) : (
         <div>
-          {[...Array(numberOfApplicants)].map((_, index) => (
-            <div class="split-middle">
-              <div>
-                <div key={index}>
-                  <label>Gross Salary #{index + 1}:</label>
-                  <input
-                    class="split"
-                    type="number"
-                    value={applicantIncomes[index] || ''}
-                    placeholder="0"
-                    onChange={(e) => onIncomeChange(index, e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
           <label class="mt-1"> 
             <button class="m-1" onClick={toggleExemption}>{multiplier === 3.5 ? "3.5x" : "4.5x"}</button><br></br>
             toggle for exemption rate
@@ -119,8 +120,8 @@ const BorrowingCapacityCalculator = ({
         </div>
       )}
       <div class="mt-2 p-3">
-        <h6><strong>Maximum Borrowable Amount: €{effectiveMaxBorrow.toFixed(2)}</strong></h6>
-        <h6><strong>Estimated Property Value: €{propertyValue.toFixed(2)}</strong></h6>
+        <h6><strong>Maximum Borrowable Amount: €{effectiveMaxBorrow ? effectiveMaxBorrow.toFixed(2) : "0"}</strong></h6>
+        <h6><strong>Estimated Property Value: €{propertyValue ? propertyValue.toFixed(2) : "0"}</strong></h6>
       </div>
     </div>
   );

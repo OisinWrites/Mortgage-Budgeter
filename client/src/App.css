@@ -117,6 +117,13 @@
 }
 
 /*---Financial Planner---*/
+.spin-reel-header {
+  background-color: #eff1f3;
+  padding: 1rem;
+  margin-top: 0.2rem;
+  border-radius: 10px;
+}
+
 .spin-reel {
   background-color: #eff1f3;
   max-height: 20vh;
@@ -137,4 +144,13 @@
 
 .spin-reel::-webkit-scrollbar {
   display: none;
+}
+
+.adjusted-cumulative-surplus {
+  font-weight: 700;
+  font-size: 95%;
+}
+
+.surpluses span {
+  text-align: left;
 }

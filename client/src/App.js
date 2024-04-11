@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import BorrowingCapacityCalculator from './components/BorrowingCapacityCalculator';
 import MortgageDetails from './components/MortgageDetails';
@@ -9,7 +9,7 @@ import DepositSavingPeriod from './components/DepositSavingPeriod';
 
 function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
-  const [maxBorrow, setMaxBorrow] = useState(0);
+  const [effectiveMaxBorrow, setEffectiveMaxBorrow] = useState(0);
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
   const [housePrice, setHousePrice] = useState('');
   const [mortgageDesired, setMortgageDesired] = useState('');
@@ -20,7 +20,16 @@ function App() {
   const [loanTerm, setLoanTerm] = useState('');
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [annualInterestRate, setAnnualInterestRate] = useState(0);
+  const [propertyValue, setPropertyValue] = useState(0);
 
+  useEffect(() => {
+    const loanToValueRatio = isFirstTimeBuyer ? 0.9 : 0.8;
+    // Ensure effectiveMaxBorrow is a number. If not, default to 0 before calculation.
+    const effectiveBorrow = Number(effectiveMaxBorrow) || 0;
+    const calculatedPropertyValue = parseFloat((effectiveBorrow / loanToValueRatio).toFixed(2));
+  
+    setPropertyValue(calculatedPropertyValue);
+  }, [effectiveMaxBorrow, isFirstTimeBuyer, setPropertyValue]);
 
   // Function to be passed to DepositSavingPeriod
   const updateTotalAnnualFees = (newTotal) => {
@@ -49,9 +58,11 @@ function App() {
         <div className="bcc">
           <div className="section">
             <BorrowingCapacityCalculator
+              propertyValue={propertyValue}
+              effectiveMaxBorrow={effectiveMaxBorrow}
+              setEffectiveMaxBorrow={setEffectiveMaxBorrow}
               applicantIncomes={applicantIncomes}
               onIncomeChange={handleIncomeChange}
-              setMaxBorrow={setMaxBorrow}
               isFirstTimeBuyer={isFirstTimeBuyer}
               setIsFirstTimeBuyer={setIsFirstTimeBuyer}
               setNumberOfApplicants={setNumberOfApplicants}
@@ -61,18 +72,19 @@ function App() {
         <div className="dsp">
           <div className="section">
             <DepositSavingPeriod 
-            maxBorrow={maxBorrow} 
-            isFirstTimeBuyer={isFirstTimeBuyer} 
-            hasSecondApplicant={numberOfApplicants > 1}
-            updateTotalAnnualFees={updateTotalAnnualFees}
-            housePrice={housePrice}
-            setHousePrice={setHousePrice}
-            mortgageDesired={mortgageDesired}
-            setMortgageDesired={setMortgageDesired}
-            netIncome={netIncome} 
-            setNetIncome={setNetIncome} 
-            netIncome2={netIncome2} 
-            setNetIncome2={setNetIncome2}
+              propertyValue={propertyValue}      
+              effectiveMaxBorrow={effectiveMaxBorrow} 
+              isFirstTimeBuyer={isFirstTimeBuyer} 
+              hasSecondApplicant={numberOfApplicants > 1}
+              updateTotalAnnualFees={updateTotalAnnualFees}
+              housePrice={housePrice}
+              setHousePrice={setHousePrice}
+              mortgageDesired={mortgageDesired}
+              setMortgageDesired={setMortgageDesired}
+              netIncome={netIncome} 
+              setNetIncome={setNetIncome} 
+              netIncome2={netIncome2} 
+              setNetIncome2={setNetIncome2}
             />
           </div>
         </div>

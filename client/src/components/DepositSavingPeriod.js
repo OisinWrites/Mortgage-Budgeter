@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react';
 
 const DepositSavingPeriod = ({ 
-    maxBorrow, 
+    effectiveMaxBorrow, 
     isFirstTimeBuyer, 
     hasSecondApplicant, 
     housePrice,
@@ -12,7 +12,8 @@ const DepositSavingPeriod = ({
     setNetIncome, 
     netIncome2, 
     setNetIncome2,
-    updateTotalAnnualFees
+    updateTotalAnnualFees,
+    propertyValue
     }) => {
 
     const [monthlyExpenses, setMonthlyExpenses] = useState('');
@@ -32,6 +33,13 @@ const DepositSavingPeriod = ({
     const [solicitorFeeType, setSolicitorFeeType] = useState('1%');
     const [solicitorFlatFee, setSolicitorFlatFee] = useState('');
 
+    const safeEffectiveMaxBorrow = Number(effectiveMaxBorrow) || 0;
+    const safeHousePrice = Number(housePrice) || 0;
+    const safeMortgageDesired = Number(mortgageDesired) || 0;
+
+    const limitedHousePrice = parseFloat((propertyValue ?? 0));
+        setHousePrice(limitedHousePrice);
+
     const handleHousePriceChange = (e) => {
         const newHousePrice = e.target.value;
         setHousePrice(newHousePrice); // Update state in App.js
@@ -40,8 +48,9 @@ const DepositSavingPeriod = ({
 
     const handleMortgageChange = (e) => {
         const value = Number(e.target.value);
-        const newMortgageDesired = value > maxBorrow ? maxBorrow : value;
-        setMortgageDesired(newMortgageDesired); // This updates the state in App.js directly
+        const safeEffectiveMaxBorrow = effectiveMaxBorrow || 0; // Fallback to 0 if undefined
+        const newMortgageDesired = value > safeEffectiveMaxBorrow ? safeEffectiveMaxBorrow : value;
+        setMortgageDesired(newMortgageDesired);
     };
 
     useEffect(() => {
@@ -57,6 +66,11 @@ const DepositSavingPeriod = ({
         }
     }, [hasSecondApplicant]);
 
+    useEffect(() => {
+        const limitedHousePrice = propertyValue ? parseFloat(propertyValue) : 0;
+        setHousePrice(limitedHousePrice);
+    }, [propertyValue, setHousePrice]);
+
     const combinedNetIncome = parseFloat(netIncome) + parseFloat(netIncome2);
     const combinedMonthlyExpenses = parseFloat(monthlyExpenses) + parseFloat(monthlyExpenses2);
     const combinedBills = parseFloat(bills) + parseFloat(bills2);
@@ -68,6 +82,12 @@ const DepositSavingPeriod = ({
 
     // Calculate the minimum deposit required
     const minimumDeposit = isFirstTimeBuyer ? mortgageDesired * 0.1 : mortgageDesired * 0.2;
+    const totalMortgageAndMinimumDeposit = mortgageDesired + minimumDeposit;
+
+    const additionalDepositRequired = housePrice > totalMortgageAndMinimumDeposit ? housePrice - totalMortgageAndMinimumDeposit : 0;
+
+    const formattedAdditionalDepositRequired = additionalDepositRequired > 0 ? additionalDepositRequired.toFixed(2) : "0.00";
+
 
     function calculateRegistryFee(housePrice) {
         if (housePrice <= 50000) return 400;
@@ -115,6 +135,11 @@ const DepositSavingPeriod = ({
         const newTotalAnnualFees = insuranceCosts + propertyTax;
         updateTotalAnnualFees(newTotalAnnualFees);
     }, [insuranceCosts, propertyTax, updateTotalAnnualFees]);
+
+    useEffect(() => {
+        // Automatically set mortgageDesired to match effectiveMaxBorrow
+        setMortgageDesired(effectiveMaxBorrow);
+    }, [effectiveMaxBorrow, setMortgageDesired]);
 
     // Total savings needed
     const totalSavingsNeeded = minimumDeposit + totalAdditionalCosts + Number(combinedSavingsGoal);
@@ -192,22 +217,22 @@ const DepositSavingPeriod = ({
                 <h5>Mortgage Target</h5>
                 <div class="split-middle">
                     <div>
-                        <label>Mortgage Amount</label>
+                        <label>*Mortgage Drawdown</label>
                         <input
                             type="number"
                             value={mortgageDesired}
                             onChange={handleMortgageChange}
-                            onBlur={() => setMortgageDesired(mortgageDesired > maxBorrow ? maxBorrow : mortgageDesired)}
+                            onBlur={() => setMortgageDesired(mortgageDesired > effectiveMaxBorrow ? effectiveMaxBorrow : mortgageDesired)}
                             placeholder="Mortgage Amount"
                         />
                     </div>
                     <div>
                         <label>
-                        Limit: (up to €{maxBorrow.toFixed(2)}): 
+                        (Limit of €{effectiveMaxBorrow}): 
                         </label>
                     </div>
                     <div>
-                        <label>Estimated House Price: </label>
+                        <label>*Estimated House Price: </label>
                         <input 
                         type="number" 
                         value={housePrice} 
@@ -218,7 +243,10 @@ const DepositSavingPeriod = ({
 
                 <h5>Additional Costs</h5>
                 <div class="additional-fees">
-                    <p>Minimum Deposit Required: €{minimumDeposit.toFixed(2)}</p>
+                    <p>Minimum Deposit Required: €{minimumDeposit}</p>
+                    {additionalDepositRequired > 0 && (
+                        <p>Additional Deposit Required: €{formattedAdditionalDepositRequired}</p>
+                    )}
                     <p>Stamp Duty @{housePrice < 1000000 ? "1%" : "2%"} of the property value: €{stampDuty.toFixed(2)}</p>
                     <p>                   
                         Solicitor Fees @ 
@@ -236,14 +264,14 @@ const DepositSavingPeriod = ({
                             placeholder="Enter flat fee amount"
                             />
                         )} : €{solicitorFees.toFixed(2)}
-                    </p>
-                    <p>Valuer's Report Fee: €{valuerReport.toFixed(2)}</p>
-                    <p>Surveyor's Report Fee (plus 23% VAT): €{surveyorReport.toFixed(2)}</p>
-                    <p>Registry Fee: €{registryFee.toFixed(2)}</p>
-                    <p>Homeowner's Insurance (annual): €{(300).toFixed(2)}</p>
-                    <p>Mortgage Insurance (annual): €{(360).toFixed(2)}</p>
+                        </p>
+                    <p>Valuer's Report Fee: €{valuerReport}</p>
+                    <p>Surveyor's Report Fee (plus 23% VAT): €{surveyorReport}</p>
+                    <p>Registry Fee: €{registryFee}</p>
+                    <p>Homeowner's Insurance (annual): €{(300)}</p>
+                    <p>Mortgage Insurance (annual): €{(360)}</p>
                     <p>
-                        Local Property Tax (Annual): €{propertyTax.toFixed(2)}
+                        Local Property Tax (Annual): €{propertyTax}
                         <br></br>
                         <a class="bcc m-0 pb-1" href="https://www.revenue.ie/en/search.aspx?q=lpt%20calculator" target="_blank" rel="noopener noreferrer">
                             (LPT is affected by the local authority rate.<br></br>
@@ -253,7 +281,7 @@ const DepositSavingPeriod = ({
                     <p class="pt-2">Total Additional Costs: €{totalAdditionalCosts.toFixed(2)}</p>
                 </div>
                 <div class="p-3">
-                    <h6 class="font-weight-bold">Total Savings Needed: €{isNaN(totalSavingsNeeded) ? 0 : totalSavingsNeeded.toFixed(2)}</h6>
+                    <h6 class="font-weight-bold">Total Savings Needed: €{isNaN(totalSavingsNeeded) ? 0 : totalSavingsNeeded}</h6>
                     <h6><strong>Months to Reach Goal: {monthsToSave <= 0 ? "Goal not achievable with current setup" : monthsToSave || "-"}</strong></h6>
                 </div>
             </form>

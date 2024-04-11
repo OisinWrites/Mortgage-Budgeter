@@ -13,6 +13,8 @@ const FinancialPlanner = ({
     mortgageDesired
   }) => {
 
+  const [comparisonResults, setComparisonResults] = useState([]);
+
   const [capitalGains1, setCapitalGains1] = useState('');
   const [capitalGains2, setCapitalGains2] = useState('');
 
@@ -61,19 +63,22 @@ const FinancialPlanner = ({
   .map((item, index) => (
     <div class="raise-dropdown container" key={`salary-raise-bonus-${index}`}>
       <div class="row">
-        <span class="col-4">
-          Year {index + 1} Raise { item.raise}%
+        <span class="col-1">
+        {index + 1}
         </span>
-        <span class="col-3">
-          <input
+          <span class="col-5">
+            <input
               type="range"
               min="0"
               max="25"
               value={item.raise}
               onChange={(e) => handleRaiseAndBonusChange(e, index, 1, 'raise')}
-              style={{ width: '100%' }} // Style as needed
-            />
-        </span>
+              style={{ width: '100%' }}
+              />
+          </span>
+          <span class="col-1">
+              {item.raise}%
+          </span>
         <span class="col-5">
           <input
             class="col-5"
@@ -87,6 +92,19 @@ const FinancialPlanner = ({
       </div>
     </div>
   ));
+
+  const calculateNetCapitalGains = (capitalGains) => {
+    const allowance = 1270;
+    const taxRate = 0.33;
+  
+    if (capitalGains <= allowance) {
+      return capitalGains;
+    } else {
+      const taxableGains = capitalGains - allowance;
+      const taxDue = taxableGains * taxRate;
+      return capitalGains - taxDue;
+    }
+  };
 
   // Handler function needs to be adapted to update the correct applicant's state
   const handleRaiseAndBonusChange = (e, yearIndex, applicantNumber, field) => {
@@ -227,10 +245,10 @@ const FinancialPlanner = ({
       salaryRaiseAndBonusInputs2 = salaryRaisesAndBonuses2.map((item, index) => (
           <div className="raise-dropdown container" key={`applicant2-salary-raise-bonus-${index}`}>
               <div class="row">
-                  <span class="col-4">
-                      Year {index + 1} Raise {item.raise}%
-                  </span>
-                  <span class="col-3">
+                <span class="col-1">
+                {index + 1}
+                </span>
+                  <span class="col-5">
                       <input
                           type="range"
                           min="0"
@@ -239,6 +257,9 @@ const FinancialPlanner = ({
                           onChange={(e) => handleRaiseAndBonusChange(e, index, 2, 'raise')}
                           style={{ width: '100%' }}
                       />
+                  </span>
+                  <span class="col-1">
+                      {item.raise}%
                   </span>
                   <span class="col-5">
                       <input
@@ -309,6 +330,118 @@ const FinancialPlanner = ({
   }
 
 
+  const renderComparisonResults = (comparisonResults) => {
+    return comparisonResults.map((result, index) => (
+      <div className="row surpluses" key={index}>
+        <span className="col-1">{result.year}:</span>
+        <span className="col-5 adjusted-cumulative-surplus offset-1">€{result.adjustedCumulativeSurplus.toFixed(2)}</span>
+        <span className="col-5">€{result.openingBalance}</span>
+        {/* If you need to show the comparison result explicitly */}
+        <span className="col-1">
+          {result.isGreaterOrEqual ? '>= Opening Balance' : '< Opening Balance'}
+        </span>
+      </div>
+    ));
+  };
+
+  const renderSurplusDetails = (surplusDetails, windfalls, capitalGains, savingGoals, repaymentSchedule) => {
+    return surplusDetails.map((detail, index) => {
+      const { annualSurplus, cumulativeSurplus } = detail;
+      const netCapitalGains = calculateNetCapitalGains(parseFloat(capitalGains) || 0);
+      const adjustedCumulativeSurplus = cumulativeSurplus + 
+                                         (parseFloat(windfalls) || 0) 
+                                         + netCapitalGains -
+                                         (parseFloat(savingGoals) || 0);
+
+      const openingBalance = repaymentSchedule.find(item => item.year === index + 1)?.openingBalance.toFixed(2) || "N/A";
+  
+      return (
+        <div className="row surpluses" key={index}>
+          <span className="col-1">{index + 1}:</span>
+          <span className="col-5 adjusted-cumulative-surplus  offset-1">€{adjustedCumulativeSurplus.toFixed(2)}</span>
+          <span className="col-5">€{openingBalance}</span>
+        </div>
+      );
+    });
+  };
+  
+  // Utilize the adjusted function for both applicants
+  const surplusDetailsList1 = renderSurplusDetails(
+    surplusDetails1, 
+    windfalls1, 
+    capitalGains1, 
+    savingGoals1,
+    repaymentSchedule
+  );
+  
+  let surplusDetailsList2 = null;
+  if (hasSecondApplicant) {
+    surplusDetailsList2 = renderSurplusDetails(
+      surplusDetails2, 
+      windfalls2, 
+      capitalGains2, 
+      savingGoals2,
+      repaymentSchedule
+    );
+  }
+
+  useEffect(() => {
+    if (repaymentSchedule.length > 0 && surplusDetails1.length > 0) {
+      const adjustedResults = surplusDetails1.map((detail, index) => {
+        let adjustedCumulativeSurplus;
+  
+        if (index === 0) {
+          // For the first year, set surplus explicitly to 0
+          adjustedCumulativeSurplus = 0;
+        } else {
+          // For subsequent years, calculate as before
+          const previousDetail = surplusDetails1[index - 1];
+          const netCapitalGains = calculateNetCapitalGains(parseFloat(capitalGains1) || 0);
+          adjustedCumulativeSurplus = previousDetail.cumulativeSurplus + 
+                                       (parseFloat(windfalls1) || 0) + 
+                                       netCapitalGains - 
+                                       (parseFloat(savingGoals1) || 0);
+          // Adjust for a second applicant if present
+          if (hasSecondApplicant && surplusDetails2.length > index - 1) {
+            const previousDetail2 = surplusDetails2[index - 1];
+            const netCapitalGains2 = calculateNetCapitalGains(parseFloat(capitalGains2) || 0);
+            adjustedCumulativeSurplus += previousDetail2.cumulativeSurplus + 
+                                         (parseFloat(windfalls2) || 0) + 
+                                         netCapitalGains2 - 
+                                         (parseFloat(savingGoals2) || 0);
+          }
+        }
+  
+        const openingBalance = repaymentSchedule[index]?.openingBalance || 0;
+        const isGreaterOrEqual = adjustedCumulativeSurplus >= openingBalance;
+  
+        return {
+          year: index + 1, // Keeping year as is, starting from 1
+          isGreaterOrEqual,
+          adjustedCumulativeSurplus,
+          openingBalance,
+        };
+      });
+  
+      setComparisonResults(adjustedResults);
+    }
+  }, [
+    repaymentSchedule, 
+    surplusDetails1, 
+    surplusDetails2,
+    windfalls1, 
+    capitalGains1, 
+    savingGoals1, 
+    windfalls2, 
+    capitalGains2, 
+    savingGoals2, 
+    hasSecondApplicant // Include this to re-run the effect when the second applicant's status changes
+  ]);
+  
+  
+
+  const firstYearMeetingCondition = comparisonResults.find(result => result.isGreaterOrEqual);
+
   const netIncomeList1 = adjustedSalaries1 ? renderNetIncomeList(adjustedSalaries1) : null;
   const netIncomeList2 = hasSecondApplicant ? renderNetIncomeList(adjustedSalaries2) : null;
 
@@ -324,20 +457,20 @@ const FinancialPlanner = ({
           )}
           <div>
           <hr></hr>
-          <p>Gross Income: €{grossIncome1.toFixed(2)}</p>
-          <div>
+
+          <div class="spin-reel-header">
             <button onClick={toggleRaisesDiv}>Future Salary & Income Adjustments</button>
-            
-            {showRaisesDiv && (
-              <div id="raises">
-                <div class="spin-reel rounded">
-                  {salaryRaiseAndBonusInputs}
+              {showRaisesDiv && (
+                <div id="raises">
+                  <div class="spin-reel rounded">
+                    {salaryRaiseAndBonusInputs}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
+
+
           <ul>{adjustedSalariesList1}</ul>
-          <ul>{netIncomeList1}</ul>
           <label>
             Rent a Room Relief:
             <input 
@@ -375,24 +508,6 @@ const FinancialPlanner = ({
             <input type="number" value={savingGoals1} onChange={handleSavingGoalsChange1} placeholder={' Non-mortgage targets'}/>
           </label>
           <hr></hr>
-          <div class="container pb-2">
-            <div class="spin-reel">
-              <div class="row">
-                <span class="col-2">Year</span>
-                <span class="col-5">Annual Surplus</span>
-                <span class="col-5">Cumulative Surplus</span>
-              </div>
-              <hr></hr>
-              {surplusDetails1.map((detail, index) => (
-                <div class="row" key={index}>
-                  <span class="col-2">{index + 1}:</span>
-                  <span class="col-5">€{detail.annualSurplus.toFixed(2)}</span>
-                  <span class="col-5">€{detail.cumulativeSurplus.toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-        </div>
-
           </div>
           </div>
 
@@ -403,14 +518,15 @@ const FinancialPlanner = ({
               <div>
                 <hr></hr>
                 <p>Gross Income: €{grossIncome2.toFixed(2)}</p>
-                <div>
+
+                <div class="spin-reel-header">
                   <button onClick={toggleRaisesDiv2}>Future Salary & Income Adjustments</button>                  
                   {showRaisesDiv2 && (
                     <div id="raises2">
                       <div class="spin-reel rounded">
                         {salaryRaiseAndBonusInputs2}
                       </div>
-                    </div>
+                    </div>                
                   )}
                 </div>
                 <ul>{adjustedSalariesList2}</ul>
@@ -451,29 +567,36 @@ const FinancialPlanner = ({
                   <input type="number" value={savingGoals2} onChange={handleSavingGoalsChange2} placeholder={' Non-mortgage targets'}/>
                 </label>
                 <hr></hr>
-                <div class="container pb-2">
-                    <div class="spin-reel">
-                      <div class="row">
-                        <span class="col-2">Year</span>
-                        <span class="col-5">Annual Surplus</span>
-                        <span class="col-5">Cumulative Surplus</span>
-                      </div>
-                      <hr></hr>
-                      {surplusDetails2.map((detail, index) => (
-                        <div class="row" key={index}>
-                          <span class="col-2">{index + 1}:</span>
-                          <span class="col-5">€{detail.annualSurplus.toFixed(2)}</span>
-                          <span class="col-5">€{detail.cumulativeSurplus.toFixed(2)}</span>
-                        </div>
-                      ))}
-                    </div>
-                </div>
               </div>
             </div>
 
           </>
           )}
-
+          <div class="container pb-2">
+            <div class="spin-reel-header">
+              <div class="row surpluses">
+                <span class="col-1">Year</span>
+                <span class="col-5 offset-1">Annual Surplus</span>
+                <span class="col-5">Principal Balance</span>
+              </div>
+              <hr></hr>
+              <div class="spin-reel">
+                {comparisonResults.map(result => (
+                  <div className="row surpluses" key={result.year}>
+                    <span className="col-1">{result.year}:</span>
+                    <span className="col-5 adjusted-cumulative-surplus offset-1">€{result.adjustedCumulativeSurplus.toFixed(2)}</span>
+                    <span className="col-5">€{result.openingBalance.toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              <span>
+                {firstYearMeetingCondition ? 
+                  `Potentially pay-off mortgage early by Year ${firstYearMeetingCondition.year}` : 
+                  "The Adjusted Cumulative Surplus does not exceed the Opening Balance in any year of the loan term."
+                }
+              </span>
+            </div>
+          </div>
         </div>
       </div>
   );
