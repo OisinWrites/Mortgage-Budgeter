@@ -5,10 +5,10 @@ import MortgageDetails from './components/MortgageDetails';
 import FinancialPlanner from './components/FinancialPlanner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DepositSavingPeriod from './components/DepositSavingPeriod';
-import FoldDepositSavingPeriod from './components/FoldDepositSavingPeriod';
-import FoldBorrowingCapacityCalculator from './components/FoldBorrowingCapacityCalculator';
-import FoldMortgageDetails from './components/FoldMortgageDetails';
-import FoldFinancialPlanner from './components/FoldFinancialPlanner';
+import FoldDepositSavingPeriod from './components/FoldDSP';
+import FoldBorrowingCapacityCalculator from './components/FoldBCC';
+import FoldMortgageDetails from './components/FoldMD';
+import FoldFinancialPlanner from './components/FoldFP';
 
 function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
@@ -24,6 +24,8 @@ function App() {
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [annualInterestRate, setAnnualInterestRate] = useState(0);
   const [propertyValue, setPropertyValue] = useState(0);
+  const [totalSavingsNeeded, setTotalSavingsNeeded] = useState(0);
+  const [monthsToSave, setMonthsToSave] = useState(0);
 
   useEffect(() => {
     const loanToValueRatio = isFirstTimeBuyer ? 0.9 : 0.8;
@@ -58,17 +60,29 @@ function App() {
         <h2>Mortgage and Savings Calculator</h2>
       </header>
       <main className="mortgage-budgeteer pb-3">
-      <div className="section">
+      <div className="section hidden">
         <FoldBorrowingCapacityCalculator
               numberOfApplicants={numberOfApplicants}
               effectiveMaxBorrow={effectiveMaxBorrow}
               applicantIncomes={applicantIncomes}
               hasSecondApplicant={numberOfApplicants > 1}
         /></div>
-      <div className="section"><FoldDepositSavingPeriod/></div>
+        <div className="section hidden">
+          <FoldDepositSavingPeriod
+          totalSavingsNeeded={totalSavingsNeeded}
+          setTotalSavingsNeeded={setTotalSavingsNeeded}
+          monthsToSave={monthsToSave}
+          setMonthsToSave={setMonthsToSave}
+        /></div>
 
-      <div className="section"><FoldMortgageDetails/></div>
-      <div className="section"><FoldFinancialPlanner/></div>
+        <div className="section hidden">
+          <FoldMortgageDetails
+          />        
+        </div>
+        <div className="section hidden">
+          <FoldFinancialPlanner
+          />
+        </div>
         <div className="bcc">
           <div className="section">
             <BorrowingCapacityCalculator
@@ -86,6 +100,8 @@ function App() {
         <div className="dsp">
           <div className="section">
             <DepositSavingPeriod 
+              totalSavingsNeeded={totalSavingsNeeded}
+              monthsToSave={monthsToSave}
               propertyValue={propertyValue}      
               effectiveMaxBorrow={effectiveMaxBorrow} 
               isFirstTimeBuyer={isFirstTimeBuyer} 

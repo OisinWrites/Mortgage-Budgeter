@@ -154,3 +154,7 @@
 .surpluses span {
   text-align: left;
 }
+
+.hidden {
+  display: none;
+}
