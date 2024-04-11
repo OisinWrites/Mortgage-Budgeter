@@ -5,7 +5,10 @@ import MortgageDetails from './components/MortgageDetails';
 import FinancialPlanner from './components/FinancialPlanner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DepositSavingPeriod from './components/DepositSavingPeriod';
-
+import FoldDepositSavingPeriod from './components/FoldDepositSavingPeriod';
+import FoldBorrowingCapacityCalculator from './components/FoldBorrowingCapacityCalculator';
+import FoldMortgageDetails from './components/FoldMortgageDetails';
+import FoldFinancialPlanner from './components/FoldFinancialPlanner';
 
 function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
@@ -55,6 +58,17 @@ function App() {
         <h2>Mortgage and Savings Calculator</h2>
       </header>
       <main className="mortgage-budgeteer pb-3">
+      <div className="section">
+        <FoldBorrowingCapacityCalculator
+              numberOfApplicants={numberOfApplicants}
+              effectiveMaxBorrow={effectiveMaxBorrow}
+              applicantIncomes={applicantIncomes}
+              hasSecondApplicant={numberOfApplicants > 1}
+        /></div>
+      <div className="section"><FoldDepositSavingPeriod/></div>
+
+      <div className="section"><FoldMortgageDetails/></div>
+      <div className="section"><FoldFinancialPlanner/></div>
         <div className="bcc">
           <div className="section">
             <BorrowingCapacityCalculator
