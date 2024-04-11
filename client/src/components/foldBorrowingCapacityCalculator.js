@@ -18,6 +18,7 @@ const FoldBorrowingCapacityCalculator = ({
               {hasSecondApplicant && (
               <p>Gross Income: €{grossIncome2}</p>
               )}
+              <p>fix</p>
             </div>
           );
     };
