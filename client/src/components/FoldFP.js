@@ -7,7 +7,7 @@ const FoldFinancialPlanner = ({
 
         return (
             <div>
-              <h2>Borrowing Capacity Information</h2>
+              <h2>Financial Planner Information</h2>
             </div>
         );
     };

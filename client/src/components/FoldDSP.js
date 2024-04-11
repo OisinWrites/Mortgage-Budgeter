@@ -8,7 +8,7 @@ const FoldDepositSavingPeriod = ({
         return (
             <div>
                 <h2>Deposit Saving Information</h2>
-                <p>toFixed</p>
+                
             </div>
         );
     };

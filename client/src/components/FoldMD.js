@@ -8,7 +8,7 @@ const FoldMortgagePlanner = ({
     return (
         <>
             <div>
-                <p>Hey</p>
+                <h2>Mortgage Details</h2>
             </div>
         </>           
         );
