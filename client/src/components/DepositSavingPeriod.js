@@ -4,8 +4,6 @@ const DepositSavingPeriod = ({
     effectiveMaxBorrow, 
     isFirstTimeBuyer, 
     hasSecondApplicant, 
-    housePrice,
-    setHousePrice,
     mortgageDesired,
     setMortgageDesired,
     netIncome, 
@@ -33,18 +31,13 @@ const DepositSavingPeriod = ({
     const [solicitorFeeType, setSolicitorFeeType] = useState('1%');
     const [solicitorFlatFee, setSolicitorFlatFee] = useState('');
 
-    const safeEffectiveMaxBorrow = Number(effectiveMaxBorrow) || 0;
-    const safeHousePrice = Number(housePrice) || 0;
-    const safeMortgageDesired = Number(mortgageDesired) || 0;
+    const [housePrice, setHousePrice] = useState(propertyValue || 0);
+    const [userHasEdited, setUserHasEdited] = useState(false); // Define the state for user edit tracking
 
-    const limitedHousePrice = parseFloat((propertyValue ?? 0));
+    useEffect(() => {
+        const limitedHousePrice = parseFloat(propertyValue ?? 0);
         setHousePrice(limitedHousePrice);
-
-    const handleHousePriceChange = (e) => {
-        const newHousePrice = e.target.value;
-        setHousePrice(newHousePrice); // Update state in App.js
-        // Additional logic if needed...
-    };
+    }, [propertyValue]);
 
     const handleMortgageChange = (e) => {
         const value = Number(e.target.value);
@@ -54,22 +47,27 @@ const DepositSavingPeriod = ({
     };
 
     useEffect(() => {
-        if (!hasSecondApplicant) {
-            // Reset all second applicant-related states to null or initial state
-            setNetIncome2('0');
-            setMonthlyExpenses2('0');
-            setRent2('0');
-            setBills2('0');
-            setAdditionalExpenses2('0');
-            setSavingsGoal2('0');
-            setCurrentSavings2('0');
+        if (!userHasEdited) {
+          setHousePrice(propertyValue || 0);
         }
-    }, [hasSecondApplicant]);
+    }, [propertyValue, userHasEdited]);
+
+    const handleHousePriceChange = (e) => {
+        setHousePrice(e.target.value);
+        setUserHasEdited(true); // Set to true when user edits the input
+    };
 
     useEffect(() => {
-        const limitedHousePrice = propertyValue ? parseFloat(propertyValue) : 0;
-        setHousePrice(limitedHousePrice);
-    }, [propertyValue, setHousePrice]);
+        if (!hasSecondApplicant) {
+            setNetIncome2('');
+            setMonthlyExpenses2('');
+            setRent2('');
+            setBills2('');
+            setAdditionalExpenses2('');
+            setSavingsGoal2('');
+            setCurrentSavings2('');
+        }
+    }, [hasSecondApplicant]);
 
     const combinedNetIncome = parseFloat(netIncome) + parseFloat(netIncome2);
     const combinedMonthlyExpenses = parseFloat(monthlyExpenses) + parseFloat(monthlyExpenses2);
@@ -81,10 +79,10 @@ const DepositSavingPeriod = ({
 
 
     // Calculate the minimum deposit required
-    const minimumDeposit = isFirstTimeBuyer ? mortgageDesired * 0.1 : mortgageDesired * 0.2;
+    const minimumDeposit = isFirstTimeBuyer ? propertyValue * 0.1 : propertyValue * 0.2;
     const totalMortgageAndMinimumDeposit = mortgageDesired + minimumDeposit;
 
-    const additionalDepositRequired = housePrice > totalMortgageAndMinimumDeposit ? housePrice - totalMortgageAndMinimumDeposit : 0;
+    const additionalDepositRequired = housePrice > totalMortgageAndMinimumDeposit ? housePrice - totalMortgageAndMinimumDeposit : "0";
 
     const formattedAdditionalDepositRequired = additionalDepositRequired > 0 ? additionalDepositRequired.toFixed(2) : "0.00";
 
@@ -153,31 +151,31 @@ const DepositSavingPeriod = ({
                 <div class="split-middle">
                     <div>
                         <label>Net Pay Per Month: </label>
-                        <input type="number" value={netIncome} onChange={(e) => setNetIncome(e.target.value)} placeholder="Net Income"/>
+                        <input type="number" value={netIncome} onChange={(e) => setNetIncome(e.target.value)} placeholder=" Net Income"/>
                     </div>
                     <div>
                         <label>Groceries & Social: </label>
-                        <input type="number" value={monthlyExpenses} onChange={(e) => setMonthlyExpenses(e.target.value)} placeholder="Monthly Expenses"/>
+                        <input type="number" value={monthlyExpenses} onChange={(e) => setMonthlyExpenses(e.target.value)} placeholder=" Monthly Expenses"/>
                     </div>
                     <div>
                         <label>Rent Per Month: </label>
-                        <input type="number" value={rent} onChange={(e) => setRent(e.target.value)} placeholder="Rent (Optional)"/>
+                        <input type="number" value={rent} onChange={(e) => setRent(e.target.value)} placeholder=" Rent"/>
                     </div>
                     <div>
                         <label>Bills Per Month: </label>
-                        <input type="number" value={bills} onChange={(e) => setBills(e.target.value)} placeholder="Bills"/>
+                        <input type="number" value={bills} onChange={(e) => setBills(e.target.value)} placeholder=" Bills"/>
                     </div>
                     <div>
                         <label>Annual Expenses: </label>
-                        <input type="number" value={additionalExpenses} onChange={(e) => setAdditionalExpenses(e.target.value)} placeholder="(Optional)"/>
+                        <input type="number" value={additionalExpenses} onChange={(e) => setAdditionalExpenses(e.target.value)} placeholder=" Once per year bills"/>
                     </div>
                     <div>
                         <label>Current Savings: </label>
-                        <input type="number" value={currentSavings} onChange={(e) => setCurrentSavings(e.target.value)} placeholder="Current Savings"/>
+                        <input type="number" value={currentSavings} onChange={(e) => setCurrentSavings(e.target.value)} placeholder=" Current Savings"/>
                     </div>
                     <div>
                         <label>Savings Goal: </label>
-                        <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(e.target.value)} placeholder="Savings Goal"/>
+                        <input type="number" value={savingsGoal} onChange={(e) => setSavingsGoal(e.target.value)} placeholder=" Savings Goal"/>
                     </div>
                 </div>
 
@@ -186,37 +184,38 @@ const DepositSavingPeriod = ({
                         <h5>Second Applicant</h5>
                         <div>
                             <label>Net Pay Per Month: </label>
-                            <input type="number" value={netIncome2} onChange={(e) => setNetIncome2(e.target.value)} placeholder="Net Income"/>
+                            <input type="number" value={netIncome2} onChange={(e) => setNetIncome2(e.target.value)} placeholder=" Net Income"/>
                         </div>
                         <div>
                             <label>Groceries & Social: </label>
-                            <input type="number" value={monthlyExpenses2} onChange={(e) => setMonthlyExpenses2(e.target.value)} placeholder="Monthly Expenses"/>
+                            <input type="number" value={monthlyExpenses2} onChange={(e) => setMonthlyExpenses2(e.target.value)} placeholder=" Monthly Expenses"/>
                         </div>
                         <div>
                             <label>Rent Per Month: </label>
-                            <input type="number" value={rent2} onChange={(e) => setRent2(e.target.value)} placeholder="Rent (Optional)"/>
+                            <input type="number" value={rent2} onChange={(e) => setRent2(e.target.value)} placeholder=" Rent"/>
                         </div>
                         <div>
                             <label>Bills Per Month: </label>
-                            <input type="number" value={bills2} onChange={(e) => setBills2(e.target.value)} placeholder="Bills"/>
+                            <input type="number" value={bills2} onChange={(e) => setBills2(e.target.value)} placeholder=" Bills"/>
                         </div>
                         <div>
                             <label>Annual Expenses: </label>
-                            <input type="number" value={additionalExpenses2} onChange={(e) => setAdditionalExpenses2(e.target.value)} placeholder="(Optional)"/>
+                            <input type="number" value={additionalExpenses2} onChange={(e) => setAdditionalExpenses2(e.target.value)} placeholder=" Once per year bills"/>
                         </div>
                         <div>
                             <label>Current Savings: </label>
-                            <input type="number" value={currentSavings2} onChange={(e) => setCurrentSavings2(e.target.value)} placeholder="Current Savings"/>
+                            <input type="number" value={currentSavings2} onChange={(e) => setCurrentSavings2(e.target.value)} placeholder=" Current Savings"/>
                         </div>
                         <div>
                             <label>Savings Goal: </label>
-                            <input type="number" value={savingsGoal2} onChange={(e) => setSavingsGoal2(e.target.value)} placeholder="Savings Goal"/>
+                            <input type="number" value={savingsGoal2} onChange={(e) => setSavingsGoal2(e.target.value)} placeholder=" Savings Goal"/>
                         </div>
                     </div>
                 )}
                 <h5>Mortgage Target</h5>
                 <div class="split-middle">
                     <div>
+                        <div>{}</div>
                         <label>*Mortgage Drawdown</label>
                         <input
                             type="number"
@@ -233,17 +232,18 @@ const DepositSavingPeriod = ({
                     </div>
                     <div>
                         <label>*Estimated House Price: </label>
-                        <input 
-                        type="number" 
-                        value={housePrice} 
-                        onChange={handleHousePriceChange}
-                        placeholder="House Price"/>
+                            <input 
+                            type="number" 
+                            value={housePrice} 
+                            onChange={handleHousePriceChange} 
+                            placeholder="House Price"
+                            />
                     </div>
                 </div>
 
                 <h5>Additional Costs</h5>
                 <div class="additional-fees">
-                    <p>Minimum Deposit Required: €{minimumDeposit}</p>
+                    <p>Minimum Deposit Required: €{minimumDeposit.toFixed(2)}</p>
                     {additionalDepositRequired > 0 && (
                         <p>Additional Deposit Required: €{formattedAdditionalDepositRequired}</p>
                     )}

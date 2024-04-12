@@ -14,7 +14,6 @@ function App() {
   const [isFirstTimeBuyer, setIsFirstTimeBuyer] = useState(true);
   const [effectiveMaxBorrow, setEffectiveMaxBorrow] = useState(0);
   const [numberOfApplicants, setNumberOfApplicants] = useState(1);
-  const [housePrice, setHousePrice] = useState('');
   const [mortgageDesired, setMortgageDesired] = useState('');
   const [netIncome, setNetIncome] = useState('');
   const [netIncome2, setNetIncome2] = useState('');
@@ -69,10 +68,10 @@ function App() {
         /></div>
         <div className="section hidden">
           <FoldDepositSavingPeriod
-          totalSavingsNeeded={totalSavingsNeeded}
-          setTotalSavingsNeeded={setTotalSavingsNeeded}
-          monthsToSave={monthsToSave}
-          setMonthsToSave={setMonthsToSave}
+            totalSavingsNeeded={totalSavingsNeeded}
+            setTotalSavingsNeeded={setTotalSavingsNeeded}
+            monthsToSave={monthsToSave}
+            setMonthsToSave={setMonthsToSave}
         /></div>
 
         <div className="section hidden">
@@ -107,8 +106,6 @@ function App() {
               isFirstTimeBuyer={isFirstTimeBuyer} 
               hasSecondApplicant={numberOfApplicants > 1}
               updateTotalAnnualFees={updateTotalAnnualFees}
-              housePrice={housePrice}
-              setHousePrice={setHousePrice}
               mortgageDesired={mortgageDesired}
               setMortgageDesired={setMortgageDesired}
               netIncome={netIncome} 
@@ -123,7 +120,6 @@ function App() {
           <MortgageDetails
             updateMonthlyPayment={setMonthlyPayment}
             isFirstTimeBuyer={isFirstTimeBuyer}
-            housePrice={housePrice}
             annualInterestRate={annualInterestRate}
             setAnnualInterestRate={setAnnualInterestRate}
             mortgageDesired={mortgageDesired}
