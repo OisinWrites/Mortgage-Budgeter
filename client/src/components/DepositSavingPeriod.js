@@ -14,19 +14,19 @@ const DepositSavingPeriod = ({
     propertyValue
     }) => {
 
-    const [monthlyExpenses, setMonthlyExpenses] = useState('');
-    const [rent, setRent] = useState('');
-    const [bills, setBills] = useState('');
-    const [additionalExpenses, setAdditionalExpenses] = useState('');
-    const [savingsGoal, setSavingsGoal] = useState('');
-    const [currentSavings, setCurrentSavings] = useState('');
+    const [monthlyExpenses, setMonthlyExpenses] = useState(0);
+    const [rent, setRent] = useState(0);
+    const [bills, setBills] = useState(0);
+    const [additionalExpenses, setAdditionalExpenses] = useState(0);
+    const [savingsGoal, setSavingsGoal] = useState(0);
+    const [currentSavings, setCurrentSavings] = useState(0);
 
-    const [monthlyExpenses2, setMonthlyExpenses2] = useState('');
-    const [rent2, setRent2] = useState('');
-    const [bills2, setBills2] = useState('');
-    const [additionalExpenses2, setAdditionalExpenses2] = useState('');
-    const [savingsGoal2, setSavingsGoal2] = useState('');
-    const [currentSavings2, setCurrentSavings2] = useState('');
+    const [monthlyExpenses2, setMonthlyExpenses2] = useState(0);
+    const [rent2, setRent2] = useState(0);
+    const [bills2, setBills2] = useState(0);
+    const [additionalExpenses2, setAdditionalExpenses2] = useState(0);
+    const [savingsGoal2, setSavingsGoal2] = useState(0);
+    const [currentSavings2, setCurrentSavings2] = useState(0);
 
     const [solicitorFeeType, setSolicitorFeeType] = useState('1%');
     const [solicitorFlatFee, setSolicitorFlatFee] = useState('');
@@ -59,13 +59,13 @@ const DepositSavingPeriod = ({
 
     useEffect(() => {
         if (!hasSecondApplicant) {
-            setNetIncome2('');
-            setMonthlyExpenses2('');
-            setRent2('');
-            setBills2('');
-            setAdditionalExpenses2('');
-            setSavingsGoal2('');
-            setCurrentSavings2('');
+            setNetIncome2(0);
+            setMonthlyExpenses2(0);
+            setRent2(0);
+            setBills2(0);
+            setAdditionalExpenses2(0);
+            setSavingsGoal2(0);
+            setCurrentSavings2(0);
         }
     }, [hasSecondApplicant]);
 

@@ -51,7 +51,7 @@ const BorrowingCapacityCalculator = ({
 
   return (
     <div>
-      <h2>Borrowing Capacity Calculator</h2>
+      <h2>Borrowing Capacity Calculator 2</h2>
       <div class="split-middle">
         <div>
           <label>First-time buyer:</label>
